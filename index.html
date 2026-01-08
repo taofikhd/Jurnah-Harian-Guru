@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Harian Guru</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- PWA MANIFEST INTEGRATION (REQUIRED FOR INSTALLATION) -->
+    <!-- Link ini akan diisi secara dinamis oleh JavaScript -->
+    <link rel="manifest" id="pwa-manifest-link"> 
+    
+    <!-- PWA Meta Tags for mobile app experience -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Jurnal Guru">
+    <meta name="theme-color" content="#4f46e5">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .form-input {
+            @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out;
+        }
+        .form-select {
+            @apply w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out;
+        }
+
+        /* --- PRINT STYLES (Custom CSS untuk hasil cetak) --- */
+        /* Meskipun Cetak PDF dihilangkan, style ini dipertahankan agar Ekspor HTML terlihat rapi saat dibuka di Word */
+        .header-box {
+            border: 1px solid black;
+        }
+        .header-cell {
+            border: 1px solid black;
+            padding: 8px;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+            <p class="text-white mt-4">Memuat aplikasi...</p>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        <header class="bg-white shadow-md p-6 rounded-xl mb-8">
+            <h1 class="text-3xl font-extrabold text-indigo-700">Aplikasi Jurnal Harian Guru</h1>
+            <p class="text-gray-600 mt-2">Rekapitulasi Kegiatan Harian Tenaga Pendidik</p>
+            <div id="auth-info" class="text-sm mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                <span id="user-status" class="font-medium text-indigo-800">Menunggu verifikasi ID Guru...</span>
+            </div>
+        </header>
+        
+        <!-- === START CUSTOM LOGIN SECTION === -->
+        <section id="login-container" class="bg-white p-6 shadow-xl rounded-xl max-w-sm mx-auto my-16 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Login Guru</h2>
+            <p class="text-gray-600 mb-6">Masukkan ID Guru Anda (6 digit angka) untuk mengakses jurnal.</p>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="id-guru-input" class="block text-sm font-medium text-gray-700 mb-1">ID Guru</label>
+                    <input type="text" id="id-guru-input" placeholder="Contoh: 348198" required class="form-input" pattern="\d{6}">
+                </div>
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 ease-in-out shadow-lg shadow-green-200 flex items-center justify-center" id="login-button">
+                    <svg id="login-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span id="login-text">Login</span>
+                </button>
+                <div id="login-error" class="text-red-500 text-sm mt-2 hidden"></div>
+            </form>
+        </section>
+        <!-- === END CUSTOM LOGIN SECTION === -->
+
+        <main id="app-container" class="space-y-8 hidden">
+            <!-- Form Input Jurnal (EXISTING) -->
+            <section class="bg-white p-6 shadow-xl rounded-xl">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Input Jurnal Baru</h2>
+                <form id="journal-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Tanggal -->
+                        <div>
+                            <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Hari/Tanggal</label>
+                            <input type="date" id="tanggal" required class="form-input">
+                        </div>
+
+                        <!-- Kegiatan -->
+                        <div>
+                            <label for="kegiatan" class="block text-sm font-medium text-gray-700 mb-1">Kegiatan</label>
+                            <select id="kegiatan" required class="form-select">
+                                <option value="" disabled selected>Pilih Jenis Kegiatan</option>
+                                <option value="Mengajar">Mengajar</option>
+                                <option value="Piket">Piket</option>
+                                <option value="Seminar/Workshop">Seminar/Workshop</option>
+                                <option value="Mengisi Nilai/Raport">Mengisi Nilai/Raport</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Kolom Jam Pelajaran (BARU: Terpisah dari teaching-fields) -->
+                    <div id="jam-pelajaran-field" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+                         <div class="md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jam Ke-</label>
+                            <div class="flex space-x-2">
+                                <!-- Jam Mulai -->
+                                <select id="jam-mulai" class="form-select w-1/2">
+                                    <option value="" disabled selected>Mulai</option>
+                                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                                    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                                    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                                </select>
+                                <!-- Jam Selesai -->
+                                <select id="jam-selesai" class="form-select w-1/2">
+                                    <option value="" disabled selected>s/d Selesai</option>
+                                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                                    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                                    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kolom Mengajar (Diperkecil hanya untuk detail mengajar) -->
+                    <div id="teaching-fields" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+                        
+                        <!-- Kelas Diajar -->
+                        <div>
+                            <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas yang Diajar</label>
+                            <select id="kelas" class="form-select">
+                                <option value="" disabled selected>Pilih Kelas</option>
+                                <optgroup label="Kelas 7">
+                                    <option value="7 Mekkah">Mekkah</option>
+                                    <option value="7 Madinah">Madinah</option>
+                                    <option value="7 Thaif">Thaif</option>
+                                    <option value="7 Riyadh">Riyadh</option>
+                                    <option value="7 Jeddah">Jeddah</option>
+                                </optgroup>
+                                <optgroup label="Kelas 8">
+                                    <option value="8 Alexandria">Alexandria</option>
+                                    <option value="8 Abu Dhabi">Abu Dhabi</option>
+                                    <option value="8 Andalusia">Andalusia</option>
+                                    <option value="8 Istanbul">Istanbul</option>
+                                    <option value="8 Casablanca">Casablanca</option>
+                                    <option value="8 Cordova">Cordova</option>
+                                    <option value="8 Sevilla">Sevilla</option>
+                                </optgroup>
+                                <optgroup label="Kelas 9">
+                                    <option value="9 Qatar">Qatar</option>
+                                    <option value="9 Kuwait">Kuwait</option>
+                                    <option value="9 Albania">Albania</option>
+                                    <option value="9 Bosnia">Bosnia</option>
+                                    <option value="9 Maroko">Maroko</option>
+                                    <option value="9 Tunish">Tunish</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        
+                        <!-- Materi Diajar (LABEL DIUBAH) -->
+                        <div class="md:col-span-1">
+                            <label for="materi" class="block text-sm font-medium text-gray-700 mb-1">Tujuan Pembelajaran / Materi Pembelajaran</label>
+                            <input type="text" id="materi" placeholder="Contoh: Teori Gravitasi" class="form-input">
+                        </div>
+                        
+                        <!-- Kehadiran Peserta Didik -->
+                        <div class="md:col-span-1">
+                            <label for="kehadiran" class="block text-sm font-medium text-gray-700 mb-1">Kehadiran (Sakit/Izin/Alfa)</label>
+                            <textarea id="kehadiran" rows="2" placeholder="Contoh: Budi (Sakit), Sinta (Izin), Amir (Alpha)" class="form-input"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Keterangan Lainnya (DIHILANGKAN) -->
+                    
+                    <div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 ease-in-out shadow-lg shadow-indigo-200 flex items-center justify-center" id="submit-button">
+                            <svg id="submit-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span id="submit-text">Simpan Jurnal</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+            
+            <!-- --- FITUR EKSPOR --- -->
+            <section class="bg-white p-6 shadow-xl rounded-xl">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Ekspor Rekap Jurnal Bulanan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    
+                    <!-- Input Bulan (Dropdown 1-12) -->
+                    <div class="md:col-span-1">
+                        <label for="bulan-export" class="block text-sm font-medium text-gray-700 mb-1">Pilih Bulan</label>
+                        <select id="bulan-export" required class="form-select">
+                            <option value="" disabled selected>Pilih Bulan</option>
+                            <option value="01">01 - Januari</option>
+                            <option value="02">02 - Februari</option>
+                            <option value="03">03 - Maret</option>
+                            <option value="04">04 - April</option>
+                            <option value="05">05 - Mei</option>
+                            <option value="06">06 - Juni</option>
+                            <option value="07">07 - Juli</option>
+                            <option value="08">08 - Agustus</option>
+                            <option value="09">09 - September</option>
+                            <option value="10">10 - Oktober</option>
+                            <option value="11">11 - November</option>
+                            <option value="12">12 - Desember</option>
+                        </select>
+                    </div>
+
+                    <!-- Input Tahun -->
+                    <div class="md:col-span-1">
+                        <label for="tahun-export" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                        <input type="number" id="tahun-export" placeholder="Contoh: 2025" required class="form-input" min="2020" max="2050">
+                    </div>
+
+                    <!-- Tombol Ekspor Teks -->
+                     <div class="md:col-span-1">
+                         <button id="export-text-button" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 ease-in-out shadow-lg shadow-green-200 flex items-center justify-center text-sm">
+                            Ekspor Teks Sederhana (.txt)
+                        </button>
+                    </div>
+                    <!-- Tombol Ekspor HTML (DOCX Workaround) -->
+                     <div class="md:col-span-1">
+                         <button id="export-html-button" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 ease-in-out shadow-lg shadow-purple-200 flex items-center justify-center text-sm">
+                            Ekspor Dokumen HTML (Cepat & Editabel)
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- <p class="text-sm text-gray-600 mt-4 p-2 bg-purple-50 border border-purple-200 rounded-lg">
+                    💡 **Info Ekspor:** Gunakan tombol di atas untuk mendapatkan laporan. Untuk format DOCX, ekspor HTML, buka di Word/Google Docs, lalu **Simpan Sebagai (.docx)**.
+                </p> -->
+            </section>
+            
+            <!-- Daftar Jurnal Harian (MODIFIED) -->
+            <section class="bg-white p-6 shadow-xl rounded-xl">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Jurnal Harian Anda <span id="current-period-display" class="text-xl font-bold text-indigo-700">(Memuat...)</span></h2>
+                
+                <!-- NEW: Filter controls for display -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end mb-6">
+                    <!-- Filter Bulan -->
+                    <div>
+                        <label for="filter-bulan" class="block text-sm font-medium text-gray-700 mb-1">Tampilkan Bulan</label>
+                        <select id="filter-bulan" class="form-select">
+                            <option value="01">01 - Januari</option>
+                            <option value="02">02 - Februari</option>
+                            <option value="03">03 - Maret</option>
+                            <option value="04">04 - April</option>
+                            <option value="05">05 - Mei</option>
+                            <option value="06">06 - Juni</option>
+                            <option value="07">07 - Juli</option>
+                            <option value="08">08 - Agustus</option>
+                            <option value="09">09 - September</option>
+                            <option value="10">10 - Oktober</option>
+                            <option value="11">11 - November</option>
+                            <option value="12">12 - Desember</option>
+                        </select>
+                    </div>
+                    <!-- Filter Tahun -->
+                    <div>
+                        <label for="filter-tahun" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                        <input type="number" id="filter-tahun" required class="form-input">
+                    </div>
+                </div>
+                <!-- END NEW FILTER CONTROLS -->
+
+                <div id="journal-list-container" class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-3">Tanggal</th>
+                                <th class="px-6 py-3">Kegiatan</th>
+                                <th class="px-6 py-3">Detail</th>
+                                <th class="px-6 py-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="journal-entries" class="bg-white divide-y divide-gray-200">
+                            <!-- Entries will be inserted here by JavaScript -->
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500" id="empty-state">Memuat data jurnal...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Custom Modal/Alert -->
+    <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full transform transition-all duration-300 scale-95">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-3">Pesan</h3>
+            <p id="modal-message" class="text-gray-600 mb-6"></p>
+            <button id="modal-close-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition duration-150">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, where, getDocs, deleteDoc, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- KONFIGURASI PENGIRIMAN KE GOOGLE SHEETS ---
+        const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGPe_5m6kxaCrmFR2ib6YyNjwBzEgWxoXYKnLPiGFIahW_D9BWPQUsF0aDZwPZfyE1/exec'; 
+        // ----------------------------------------------------
+
+        // --- GLOBAL VARIABLES & INITIALIZATION ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        
+        // Perbaikan: Hapus referensi diri sendiri (initialAuthToken) dari deklarasi
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
+
+        let app, db, auth, firebaseUid = null; 
+        let sheetIdGuru = null; 
+        let sheetGuruName = null;
+        let sheetGuruMataPelajaran = null; // Mata Pelajaran
+        let journalDataCache = []; // Cache SEMUA data jurnal untuk filtering dan cetak
+
+        const LOCAL_STORAGE_KEY_ID = 'jurnalGuruId';
+        const LOCAL_STORAGE_KEY_NAME = 'jurnalGuruName';
+        const LOCAL_STORAGE_KEY_SUBJECT = 'jurnalGuruSubject'; // Subject Key
+
+        const JOURNAL_COLLECTION_PATH_BASE = `/artifacts/${appId}/users/`; 
+        
+        // Peta Mata Pelajaran Manual (Berdasarkan permintaan pengguna)
+        const MANUAL_SUBJECT_MAP = {
+            '856618': 'Bahasa Indonesia',
+            '496900': 'Bahasa Indonesia',
+            '224381': 'Bahasa Indonesia',
+            '840405': 'Matematika',
+            '455465': 'Matematika',
+            '727363': 'Matematika',
+            '531280': 'Matematika',
+            '294510': 'Bahasa Inggris & EP',
+            '538347': 'Bahasa Inggris & EP',
+            '799626': 'Bahasa Inggris & EP',
+            '818174': 'IPA',
+            '324591': 'IPA',
+            '293070': 'IPA',
+            '616024': 'PENDIDIKAN PANCASILA',
+            '937254': 'PENDIDIKAN PANCASILA',
+            '267154': 'PABP & BAHASA ARAB',
+            '172568': 'PAI',
+            '433811': 'IPS',
+            '496518': 'IPS',
+            '445605': 'IPS',
+            '445167': 'Informatika',
+            '525669': 'Seni Budaya',
+            '348198': 'PJOK',
+            '231698': 'PJOK',
+            '911981': 'Bahasa Arab',
+            '823347': 'BK'
+        };
+
+        // Elements
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const appContainer = document.getElementById('app-container');
+        const loginContainer = document.getElementById('login-container');
+        const userStatusSpan = document.getElementById('user-status');
+        const journalForm = document.getElementById('journal-form');
+        const journalEntriesBody = document.getElementById('journal-entries');
+        const kegiatanSelect = document.getElementById('kegiatan');
+        const teachingFields = document.getElementById('teaching-fields');
+        const modal = document.getElementById('custom-modal');
+        const modalCloseButton = document.getElementById('modal-close-button');
+        const submitButton = document.getElementById('submit-button');
+        const loginForm = document.getElementById('login-form');
+        const idGuruInput = document.getElementById('id-guru-input');
+        
+        // Deklarasi Global untuk Elemen Login
+        const loginButton = document.getElementById('login-button'); 
+        const loginSpinner = document.getElementById('login-spinner'); 
+        const loginText = document.getElementById('login-text'); 
+        const loginError = document.getElementById('login-error'); 
+        
+        // Export elements
+        const bulanExportInput = document.getElementById('bulan-export');
+        const tahunExportInput = document.getElementById('tahun-export');
+        const exportTextButton = document.getElementById('export-text-button');
+        const exportHtmlButton = document.getElementById('export-html-button');
+        
+        // New Elements for Display Filter
+        const filterBulanInput = document.getElementById('filter-bulan');
+        const filterTahunInput = document.getElementById('filter-tahun');
+        const currentPeriodDisplay = document.getElementById('current-period-display');
+        
+        // Input Jam
+        const jamPelajaranField = document.getElementById('jam-pelajaran-field');
+        const jamMulaiInput = document.getElementById('jam-mulai');
+        const jamSelesaiInput = document.getElementById('jam-selesai');
+
+        // --- UTILITY FUNCTIONS ---
+        
+        function showModal(title, message) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('div').classList.replace('scale-95', 'scale-100');
+            }, 10);
+        }
+
+        function hideModal() {
+            modal.querySelector('div').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function toggleLoading(isLoading) {
+            if (isLoading) {
+                loadingOverlay.classList.remove('hidden');
+            } else {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+        
+        function toggleLoginLoading(isLoading) {
+            loginButton.disabled = isLoading;
+            if (isLoading) {
+                loginSpinner.classList.remove('hidden');
+                loginText.textContent = 'Memverifikasi...';
+            } else {
+                loginSpinner.classList.add('hidden');
+                loginText.textContent = 'Login';
+            }
+        }
+
+        function toggleSubmitLoading(isLoading) {
+            submitButton.disabled = isLoading;
+            const submitSpinner = document.getElementById('submit-spinner');
+            const submitText = document.getElementById('submit-text');
+
+            if (isLoading) {
+                submitSpinner.classList.remove('hidden');
+                submitText.textContent = 'Menyimpan...';
+            } else {
+                submitSpinner.classList.add('hidden');
+                submitText.textContent = 'Simpan Jurnal';
+            }
+        }
+        
+        async function sendToGoogleSheet(journalData) {
+            if (!GOOGLE_SHEET_WEBHOOK_URL || GOOGLE_SHEET_WEBHOOK_URL.length < 10) {
+                console.warn("PERINGATAN: URL Webhook Google Apps Script belum diatur atau terlalu pendek. Data tidak akan dikirim ke Sheets.");
+                return;
+            }
+
+            try {
+                await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(journalData),
+                });
+                console.log("Permintaan ke Google Sheets Webhook terkirim. Cek Sheets Anda untuk konfirmasi.");
+            } catch (error) {
+                console.error("Gagal mengirim data ke Google Sheets Webhook.", error);
+            }
+        }
+
+        // --- AUTH FLOW DISPLAY FUNCTIONS ---
+        
+        function showLoginScreen() {
+            toggleLoading(false);
+            loginContainer.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+            userStatusSpan.textContent = "Silakan masukkan ID Guru Anda untuk login.";
+        }
+        
+        function showMainApp() {
+            toggleLoading(false);
+            loginContainer.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            // ID Guru Dihilangkan dari status bar
+            userStatusSpan.innerHTML = `Login sebagai: <span class="font-bold text-indigo-900">${sheetGuruName}</span>. Mata Pelajaran: <span class="font-bold text-indigo-900">${sheetGuruMataPelajaran}</span>`;
+            
+            // --- BARIS TAMBAHAN: Tampilkan konfigurasi dan UID di konsol ---
+            console.log("Firebase Configuration (Cari projectId di sini):", firebaseConfig);
+            console.log("Firebase User ID (UID):", firebaseUid);
+            // -------------------------------------------------------------
+            
+            // Set default filter values to current month/year
+            const now = new Date();
+            const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+            const currentYear = now.getFullYear();
+
+            // Set default values for DISPLAY filter
+            filterBulanInput.value = currentMonth;
+            filterTahunInput.value = currentYear;
+            // Set default values for EXPORT filter
+            bulanExportInput.value = currentMonth;
+            tahunExportInput.value = currentYear;
+
+            setupRealtimeListener(); // Call listener with defaults
+        }
+
+        function checkLoginStatus() {
+            const storedId = localStorage.getItem(LOCAL_STORAGE_KEY_ID);
+            const storedName = localStorage.getItem(LOCAL_STORAGE_KEY_NAME);
+            const storedSubject = localStorage.getItem(LOCAL_STORAGE_KEY_SUBJECT); 
+
+            if (storedId && storedName && storedSubject) {
+                sheetIdGuru = storedId;
+                sheetGuruName = storedName;
+                sheetGuruMataPelajaran = storedSubject; 
+                showMainApp();
+            } else {
+                showLoginScreen();
+            }
+        }
+        
+        async function initializeFirebase() {
+            try {
+                if (!firebaseConfig) {
+                    throw new Error("Konfigurasi Firebase tidak ditemukan.");
+                }
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                await new Promise(resolve => {
+                    onAuthStateChanged(auth, async (user) => {
+                        if (!user) {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } else {
+                            firebaseUid = user.uid;
+                        }
+                        resolve();
+                    });
+                });
+                
+                checkLoginStatus();
+
+            } catch (error) {
+                console.error("Kesalahan inisialisasi Firebase:", error);
+                showModal("Kesalahan Fatal", `Gagal menginisialisasi aplikasi. Pesan: ${error.message}`);
+                toggleLoading(false);
+            }
+        }
+        
+        // --- FORM HANDLERS DAN LISTENERS LANJUTAN ---
+
+        // LOGIKA: Menampilkan/menyembunyikan fields berdasarkan Kegiatan
+        kegiatanSelect.addEventListener('change', () => {
+            const selectedActivity = kegiatanSelect.value;
+            
+            // Reset visibility
+            teachingFields.classList.add('hidden');
+            jamPelajaranField.classList.add('hidden');
+
+            if (selectedActivity === 'Mengajar') {
+                teachingFields.classList.remove('hidden');
+                jamPelajaranField.classList.remove('hidden');
+                
+            } else if (selectedActivity === 'Piket') {
+                jamPelajaranField.classList.remove('hidden');
+
+            } 
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            toggleLoginLoading(true);
+
+            const idToVerify = idGuruInput.value.trim();
+            if (!idToVerify || idToVerify.length !== 6 || !/^\d+$/.test(idToVerify)) {
+                loginError.textContent = "ID Guru harus 6 digit angka.";
+                loginError.classList.remove('hidden');
+                toggleLoginLoading(false);
+                return;
+            }
+            
+            try {
+                // 1. Verifikasi ID ke Apps Script
+                const verificationUrl = `${GOOGLE_SHEET_WEBHOOK_URL}?id=${idToVerify}`;
+                const response = await fetch(verificationUrl);
+                const result = await response.json(); 
+                
+                if (result.verified) {
+                    
+                    // 2. Ambil Mata Pelajaran dari peta manual lokal
+                    const subject = MANUAL_SUBJECT_MAP[idToVerify];
+                    
+                    if (!subject) {
+                        console.warn(`PERINGATAN: ID Guru ${idToVerify} ditemukan di Apps Script, tetapi tidak memiliki Mata Pelajaran di peta lokal (MANUAL_SUBJECT_MAP).`);
+                    }
+                    
+                    sheetIdGuru = result.id;
+                    sheetGuruName = result.name;
+                    // Gunakan subjek dari peta lokal, jika tidak ada fallback ke "Belum Ditetapkan"
+                    sheetGuruMataPelajaran = subject || "Belum Ditetapkan"; 
+
+                    localStorage.setItem(LOCAL_STORAGE_KEY_ID, sheetIdGuru);
+                    localStorage.setItem(LOCAL_STORAGE_KEY_NAME, sheetGuruName);
+                    localStorage.setItem(LOCAL_STORAGE_KEY_SUBJECT, sheetGuruMataPelajaran); 
+                    
+                    showMainApp();
+                } else {
+                    loginError.textContent = "ID Guru tidak valid atau tidak terdaftar.";
+                    loginError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Kesalahan verifikasi login:", error);
+                loginError.textContent = "Kesalahan koneksi atau server saat verifikasi ID.";
+                loginError.classList.remove('hidden');
+            } finally {
+                toggleLoginLoading(false);
+            }
+        }
+        
+        journalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!firebaseUid || !sheetIdGuru) {
+                showModal("Akses Ditolak", "Status login tidak valid. Silakan coba login ulang.");
+                return;
+            }
+
+            toggleSubmitLoading(true);
+
+            try {
+                const tanggal = document.getElementById('tanggal').value;
+                const kegiatan = kegiatanSelect.value;
+                
+                // Fields yang digunakan bersama
+                const jamMulai = jamMulaiInput.value;
+                const jamSelesai = jamSelesaiInput.value;
+                // Keterangan Umum dihilangkan dari form dan diinisialisasi sebagai string kosong
+                const keteranganUmum = ''; 
+
+                let data;
+                let isTeaching = kegiatan === 'Mengajar';
+                let isTimeRequired = isTeaching || kegiatan === 'Piket';
+                let jamExport = '';
+
+
+                // 1. Validasi Jam Pelajaran (Jika diperlukan)
+                if (isTimeRequired) {
+                    if (!jamMulai || !jamSelesai) {
+                        showModal("Input Kurang", "Harap isi Jam Ke- (Mulai dan Selesai).");
+                        toggleSubmitLoading(false);
+                        return;
+                    }
+                    if (parseInt(jamMulai) > parseInt(jamSelesai)) {
+                         showModal("Input Jam Salah", "Jam Selesai harus lebih besar atau sama dengan Jam Ke- (Mulai).");
+                         toggleSubmitLoading(false);
+                         return;
+                    }
+                    jamExport = `${jamMulai}-${jamSelesai}`;
+                }
+                
+                // 3. Susun Data Firestore
+                data = {
+                    tanggal: tanggal,
+                    kegiatan: kegiatan,
+                    jamMulai: isTimeRequired ? jamMulai : null,
+                    jamSelesai: isTimeRequired ? jamSelesai : null,
+                    sheetIdGuru: sheetIdGuru,
+                    timestamp: Timestamp.now(),
+                };
+
+                if (isTeaching) {
+                    const kelas = document.getElementById('kelas').value;
+                    const materi = document.getElementById('materi').value;
+                    const kehadiran = document.getElementById('kehadiran').value;
+
+                    if (!kelas || !materi) { // Kelas dan Materi WAJIB untuk Mengajar
+                        showModal("Input Kurang", "Harap isi Kelas dan Tujuan Pembelajaran/Materi untuk kegiatan Mengajar.");
+                        toggleSubmitLoading(false);
+                        return;
+                    }
+                    
+                    data.kelasDiajar = kelas;
+                    data.materiDiajar = materi;
+                    data.kehadiranPesertaDidik = kehadiran || '';
+                    data.keteranganLainnya = ''; // Kosongkan, karena form dihilangkan
+                
+                } else {
+                    // Untuk Piket, Seminar, Nilai, Lainnya
+                    data.keteranganLainnya = ''; // Kosongkan
+                }
+                
+                if (!tanggal) {
+                    showModal("Input Kurang", "Harap isi Hari/Tanggal jurnal.");
+                    toggleSubmitLoading(false);
+                    return;
+                }
+
+                // 1. Simpan dokumen ke Firestore
+                const journalRef = collection(db, `${JOURNAL_COLLECTION_PATH_BASE}${firebaseUid}/jurnal_harian`);
+                await addDoc(journalRef, data);
+
+                showModal("Berhasil!", "Jurnal harian Anda telah tersimpan.");
+                journalForm.reset();
+                teachingFields.classList.add('hidden');
+                jamPelajaranField.classList.add('hidden'); // Sembunyikan field jam
+
+                // 2. Kirim data ke Google Sheets Webhook
+                const exportData = {
+                    'Tanggal': tanggal,
+                    'Kegiatan': kegiatan,
+                    'Kelas Diajar': isTeaching ? data.kelasDiajar : '',
+                    'Jam Ke': jamExport,
+                    'Tujuan Pembelajaran / Materi Pembelajaran': isTeaching ? data.materiDiajar : '', // LABEL BARU
+                    'Kehadiran Peserta Didik': isTeaching ? data.kehadiranPesertaDidik : '',
+                    'Keterangan Lainnya': '', // Kosongkan di export
+                    'ID Guru': sheetIdGuru, 
+                    'Waktu Simpan': new Date().toLocaleString('id-ID'),
+                };
+                await sendToGoogleSheet(exportData);
+
+
+            } catch (error) {
+                console.error("Gagal menyimpan jurnal:", error);
+                showModal("Kesalahan Penyimpanan", `Gagal menyimpan data jurnal. Pesan: ${error.message}`);
+            } finally {
+                toggleSubmitLoading(false);
+            }
+        });
+
+        // --- EXPORT LOGIC ---
+
+        function formatTanggal(dateString) {
+            // Mengubah format YYYY-MM-DD menjadi DD/MM/YYYY
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateString;
+        }
+
+        // Fungsi pembantu untuk mendapatkan nama bulan dalam Bahasa Indonesia
+        function getNamaBulan(bulanAngka) {
+            const bulan = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            // bulanAngka adalah string '01' hingga '12'. Kita perlu mengonversinya ke integer 1-12.
+            const index = parseInt(bulanAngka, 10) - 1; 
+            return bulan[index] || 'Bulan Tidak Valid';
+        }
+        
+        // --- DATA RETRIEVAL HELPER (Diubah untuk filter Bulanan) ---
+        function getJournalDataForExport() {
+            const bulanExport = bulanExportInput.value;
+            const tahunExport = tahunExportInput.value;
+
+            if (!bulanExport || !tahunExport) {
+                showModal("Input Kurang", "Harap masukkan Bulan dan Tahun untuk Ekspor.");
+                return null;
+            }
+
+            // 1. Tentukan rentang tanggal bulanan (dari hari pertama hingga hari terakhir bulan)
+            // Note: Firebase `tanggal` format adalah YYYY-MM-DD
+            const tglMulaiBulanan = `${tahunExport}-${bulanExport}-01`;
+            
+            // Hitung hari terakhir bulan tersebut
+            const nextMonth = (parseInt(bulanExport, 10) % 12) + 1;
+            const nextYear = parseInt(bulanExport, 10) === 12 ? parseInt(tahunExport, 10) + 1 : parseInt(tahunExport, 10);
+            const lastDayOfMonth = new Date(nextYear, nextMonth - 1, 0).getDate(); // Mendapat tanggal 0 (hari terakhir) bulan sebelumnya
+
+            const tglSelesaiBulanan = `${tahunExport}-${bulanExport}-${String(lastDayOfMonth).padStart(2, '0')}`;
+            
+            // Filter data dari cache berdasarkan sheetIdGuru dan rentang tanggal bulanan
+            const filteredEntries = journalDataCache
+                .filter(entry => entry.sheetIdGuru === sheetIdGuru)
+                .filter(entry => entry.tanggal && entry.tanggal.length === 10) 
+                .filter(entry => entry.tanggal >= tglMulaiBulanan && entry.tanggal <= tglSelesaiBulanan);
+            
+            console.log(`Pencarian data jurnal: Ditemukan ${filteredEntries.length} entri antara ${tglMulaiBulanan} dan ${tglSelesaiBulanan}`);
+
+            if (filteredEntries.length === 0) {
+                 showModal("Data Kosong", `Tidak ada data jurnal mengajar untuk bulan ${getNamaBulan(bulanExport)} tahun ${tahunExport}.`);
+                 return null;
+            }
+
+            // Sortir berdasarkan tanggal untuk laporan Ekspor
+            filteredEntries.sort((a, b) => {
+                if (a.tanggal < b.tanggal) return -1;
+                if (a.tanggal > b.tanggal) return 1;
+                // Tambahkan sorting berdasarkan timestamp sekunder jika tanggal sama
+                return a.timestamp.seconds - b.timestamp.seconds; 
+            });
+
+            return { 
+                entries: filteredEntries, 
+                bulanNama: getNamaBulan(bulanExport), 
+                tahun: tahunExport,
+                tglMulai: tglMulaiBulanan,
+                tglSelesai: tglSelesaiBulanan
+            };
+        }
+
+        // --- FUNCTON 1: EKSPOR TEKS SEDERHANA (.txt) ---
+        function generateSimpleTextReport() {
+            const result = getJournalDataForExport();
+            if (!result) return;
+
+            const { entries, bulanNama, tahun, tglMulai, tglSelesai } = result;
+
+            let text = `======================================================\n`;
+            text += `         REKAP JURNAL HARIAN GURU\n`;
+            text += `======================================================\n`;
+            text += `Nama Guru      : ${sheetGuruName}\n`;
+            text += `Mata Pelajaran : ${sheetGuruMataPelajaran || '[Tidak Ditetapkan]'}\n`; 
+            text += `Periode        : Bulan ${bulanNama} Tahun ${tahun}\n`;
+            text += `======================================================\n\n`;
+
+            entries.forEach((entry, index) => {
+                const tanggalText = formatTanggal(entry.tanggal);
+                const jamText = (entry.jamMulai && entry.jamSelesai) ? `(Jam ${entry.jamMulai}-${entry.jamSelesai})` : '';
+                
+                text += `[${index + 1}] Hari/Tgl: ${tanggalText}\n`;
+                text += `    Kegiatan: ${entry.kegiatan} ${jamText}\n`;
+
+                if (entry.kegiatan === 'Mengajar') {
+                    // LABEL BARU
+                    text += `    Tujuan/Materi: ${entry.materiDiajar}\n`;
+                    text += `    Kelas:    ${entry.kelasDiajar}\n`;
+                    if (entry.kehadiranPesertaDidik) {
+                        text += `    Absen:    ${entry.kehadiranPesertaDidik}\n`;
+                    }
+                }
+                
+                // Keterangan Lainnya dihilangkan dari output
+                text += `------------------------------------------------------\n`;
+            });
+            
+            // Panggil fungsi download
+            downloadFile(text, `Jurnal_Rekap_${sheetIdGuru}_${tglMulai}_sd_${tglSelesai}.txt`, 'text/plain');
+            showModal("Ekspor Berhasil", "Laporan teks sederhana (.txt) berhasil di-download.");
+        }
+        
+        // --- FUNCTON 2: EKSPOR HTML (DOCX WORKAROUND) ---
+        function generateHtmlReportForDownload() {
+            const result = getJournalDataForExport();
+            if (!result) return;
+            
+            const { entries, bulanNama, tahun, tglMulai, tglSelesai } = result;
+            
+            // --- 1. Bangun HTML Header (Mengikuti format yang diinginkan) ---
+            const printHeader = `
+                <table style="width:100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10pt; font-family: Arial, sans-serif;">
+                    <tr>
+                        <!-- Kolom Kiri: Logo (Rowspan 3) -->
+                        <td style="border: 1px solid black; width: 25%; text-align: center; padding: 5px;" rowspan="3">
+                            <!-- Menggunakan logo yang disediakan oleh pengguna -->
+                            <img src="https://i.imgur.com/Y17Gb5y.png" alt="Logo Sekolah" style="width: 100px; height: auto; margin: 0 auto; display: block;">
+                            <!-- MENGHILANGKAN NEXT EXCELLENT GENERATION -->
+                        </td>
+                        <!-- Kolom Kanan Atas: Nama Sekolah (Colspan 3) -->
+                        <td style="border: 1px solid black; width: 75%; text-align: center; font-size: 12pt; font-weight: bold; padding: 10px 0 5px 0;" colspan="3">
+                            SMP SHIDQIA ISLAMIC SCHOOL
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- Kolom Kanan Tengah 1: FMM (Colspan 3) -->
+                        <td style="border: 1px solid black; text-align: center; font-size: 10pt; font-weight: bold; padding-top: 5px;" colspan="3">
+                            Form Manajemen Mutu (FMM)
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- Kolom Kanan Tengah 2: Jurnal Kelas + ISO (Colspan 3) -->
+                        <td style="border: 1px solid black; text-align: center; font-size: 10pt; font-weight: bold;" colspan="3">
+                            Form Jurnal Kemajuan Belajar Kelas
+                            <div style="font-size: 8pt; font-weight: normal; margin-top: 2px;">ISO 9001:2015</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- Baris Tambahan untuk No Dok, Tgl Terbit, Revisi, Hal -->
+                        <!-- KUNCI: No Dok di kolom 1, dan 3 kolom lainnya di kanan -->
+                        <td style="border: 1px solid black; font-size: 8pt; font-weight: 600; padding: 5px; width: 25%;">No Dok : SHQ-FMM-KUR.04.05</td>
+                        <td style="border: 1px solid black; font-size: 8pt; font-weight: 600; padding: 5px; width: 25%;">Tgl Terbit : Juli 2024</td>
+                        <td style="border: 1px solid black; font-size: 8pt; font-weight: 600; padding: 5px; width: 25%;">Terbit/Revisi: A/0</td>
+                        <td style="border: 1px solid black; font-size: 8pt; font-weight: 600; padding: 5px; width: 25%;">Hal : 1 dari 1</td>
+                    </tr>
+                </table>
+
+                <!-- Header Informasi Guru -->
+                <div style="margin-bottom: 20px; font-size: 10pt;">
+                    <table style="line-height: 1.5; width: 100%;">
+                        <tr>
+                            <td style="padding-right: 15px; width: 20%;">Nama Guru</td>
+                            <td style="width: 80%;">: ${sheetGuruName}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 15px; width: 20%;">Mata Pelajaran</td>
+                            <td style="width: 80%;">: ${sheetGuruMataPelajaran || '[Tidak Ditetapkan]'}</td> 
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 14pt; font-weight: bold; text-decoration: underline; margin: 5px 0 2px 0;">JURNAL HARIAN MENGAJAR GURU</h3>
+                    <h4 style="font-size: 12pt; font-weight: bold; margin: 0;">PERIODE: Bulan ${bulanNama} Tahun ${tahun}</h4>
+                </div>
+            `;
+            
+            // --- 2. Bangun HTML Table Body ---
+            let tableRows = '';
+            let counter = 0;
+            const teachingEntries = entries.filter(entry => entry.kegiatan === 'Mengajar');
+
+            // HANYA menampilkan entri 'Mengajar' di tabel utama
+            teachingEntries.forEach((entry) => {
+                counter++;
+                const jamText = entry.jamMulai && entry.jamSelesai ? `${entry.jamMulai}-${entry.jamSelesai}` : '—';
+                const tanggalText = formatTanggal(entry.tanggal);
+                
+                tableRows += `
+                    <tr style="font-size: 9pt;">
+                        <td style="border: 1px solid black; text-align: center; padding: 8px;">${counter}</td>
+                        <td style="border: 1px solid black; text-align: center; padding: 8px;">${tanggalText}</td>
+                        <td style="border: 1px solid black; text-align: center; padding: 8px;">${jamText}</td>
+                        <td style="border: 1px solid black; text-align: center; padding: 8px;">${entry.kelasDiajar || ''}</td>
+                        <td style="border: 1px solid black; padding: 8px;">${entry.materiDiajar || ''}</td>
+                        <td style="border: 1px solid black; padding: 8px;">${entry.kehadiranPesertaDidik || ''}</td>
+                    </tr>
+                `;
+            });
+            
+            // Tambahkan baris untuk kegiatan non-mengajar (Piket, Seminar, dll.)
+            const nonTeachingEntries = entries.filter(entry => entry.kegiatan !== 'Mengajar');
+            let nonTeachingSection = '';
+
+            if (nonTeachingEntries.length > 0) {
+                 nonTeachingSection = `
+                    <h5 style="font-size: 10pt; font-weight: bold; margin-top: 20px; margin-bottom: 5px;">Kegiatan Non-Mengajar Tambahan (Termasuk Piket, Seminar, dll.):</h5>
+                    <ul style="font-size: 9pt; padding-left: 20px;">
+                        ${nonTeachingEntries.map(entry => {
+                            const jamText = (entry.jamMulai && entry.jamSelesai) ? ` (Jam ${entry.jamMulai}-${entry.jamSelesai})` : '';
+                            return `<li style="margin-bottom: 2px;">[${formatTanggal(entry.tanggal)}] ${entry.kegiatan}${jamText}</li>`;
+                        }).join('')}
+                    </ul>
+                 `;
+            }
+
+            
+            const printTable = `
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <thead>
+                        <tr style="font-size: 10pt; font-weight: bold; background-color: #f0f0f0;">
+                            <th style="border: 1px solid black; width: 5%; padding: 8px;">No</th>
+                            <th style="border: 1px solid black; width: 15%; padding: 8px;">Hari/Tanggal</th>
+                            <th style="border: 1px solid black; width: 10%; padding: 8px;">Jam ke-</th>
+                            <th style="border: 1px solid black; width: 15%; padding: 8px;">Kelas</th>
+                            <th style="border: 1px solid black; width: 40%; padding: 8px;">Tujuan Pembelajaran / Materi Pembelajaran</th>
+                            <th style="border: 1px solid black; width: 15%; padding: 8px;">Kehadiran Peserta Didik</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows || '<tr><td style="border: 1px solid black; text-align: center; font-size: 10pt; padding: 8px;" colspan="6">Tidak ada jurnal mengajar dalam rentang ini.</td></tr>'}
+                    </tbody>
+                </table>
+                ${nonTeachingSection}
+            `;
+
+            const fullHtmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Jurnal Guru Bulan ${bulanNama} ${tahun}</title>
+                </head>
+                <body style="padding: 20px; max-width: 800px; margin: 0 auto;">
+                    ${printHeader}
+                    ${printTable}
+                </body>
+                </html>
+            `;
+
+            // Panggil fungsi download
+            downloadFile(fullHtmlContent, `Jurnal_Laporan_Formal_${sheetIdGuru}_${bulanExport}_${tahun}.html`, 'text/html');
+            showModal("Ekspor Berhasil", "Laporan HTML (.html) berhasil di-download. Buka file ini di Word atau Google Docs, lalu Simpan Sebagai (.docx).");
+        }
+        
+        // Helper function for downloading both TXT and HTML
+        function downloadFile(text, filename, mimeType = 'text/plain') {
+            const blob = new Blob([text], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // --- REALTIME DATA LISTENER (Diubah menjadi filter Bulanan) ---
+
+        function setupRealtimeListener() {
+            if (!firebaseUid) return;
+
+            const selectedMonth = filterBulanInput.value;
+            const selectedYear = filterTahunInput.value;
+
+            if (!selectedMonth || !selectedYear) {
+                 currentPeriodDisplay.textContent = "(Pilih Bulan dan Tahun)";
+                 return;
+            }
+
+            // 1. Tentukan rentang tanggal bulanan (dari hari pertama hingga hari terakhir bulan)
+            const tglMulai = `${selectedYear}-${selectedMonth}-01`;
+            
+            // Hitung hari terakhir bulan tersebut
+            const nextMonth = (parseInt(selectedMonth, 10) % 12) + 1;
+            const nextYear = parseInt(selectedMonth, 10) === 12 ? parseInt(selectedYear, 10) + 1 : parseInt(selectedYear, 10);
+            const lastDayOfMonth = new Date(nextYear, nextMonth - 1, 0).getDate();
+
+            const tglSelesai = `${selectedYear}-${selectedMonth}-${String(lastDayOfMonth).padStart(2, '0')}`;
+            const bulanNama = getNamaBulan(selectedMonth);
+
+            currentPeriodDisplay.textContent = `(Bulan ${bulanNama} Tahun ${selectedYear})`;
+
+            // Query Firestore: Ambil SEMUA data (diurutkan berdasarkan timestamp) untuk user ini
+            // Filtering berdasarkan tanggal dilakukan di sisi klien (in-memory) untuk fleksibilitas
+            const q = query(
+                collection(db, `${JOURNAL_COLLECTION_PATH_BASE}${firebaseUid}/jurnal_harian`),
+                orderBy('timestamp', 'desc') 
+            );
+            
+            onSnapshot(q, (snapshot) => {
+                const allEntries = [];
+                snapshot.forEach((doc) => {
+                    allEntries.push({ id: doc.id, ...doc.data() });
+                });
+
+                // --- Client-side filtering (Filter In-Memory) ---
+                // Data tanggal di Firestore adalah string YYYY-MM-DD
+                const monthlyEntries = allEntries
+                    .filter(entry => {
+                         // Pastikan tanggal valid dan dalam rentang bulan yang dipilih
+                        return entry.tanggal && entry.tanggal >= tglMulai && entry.tanggal <= tglSelesai;
+                    });
+                // -----------------------------------------------
+
+                // Kirim hasil filter ke fungsi render
+                renderJournalEntries(monthlyEntries);
+                
+                // Update cache dengan SEMUA entri untuk keperluan Ekspor Bulanan
+                journalDataCache = allEntries; 
+
+            }, (error) => {
+                console.error("Kesalahan saat mengambil data jurnal secara realtime:", error);
+                journalEntriesBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-red-500">
+                            Gagal memuat data jurnal: ${error.message}.
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderJournalEntries(entries) {
+            // Menggunakan entries yang sudah difilter di setupRealtimeListener
+            // Filter user-specific sudah ditangani oleh path koleksi (`.../users/{firebaseUid}/jurnal_harian`)
+            const entriesToRender = entries; 
+
+            journalEntriesBody.innerHTML = ''; 
+
+            if (entriesToRender.length === 0) {
+                journalEntriesBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                            Tidak ada jurnal harian yang tercatat untuk periode ini.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            entriesToRender.forEach(entry => {
+                let detail = '';
+                const jamText = (entry.jamMulai && entry.jamSelesai) ? `(Jam ${entry.jamMulai} s/d ${entry.jamSelesai})` : '';
+
+                if (entry.kegiatan === 'Mengajar') {
+                    const kehadiranText = entry.kehadiranPesertaDidik ? `<br><span class="font-semibold text-red-600">Absen:</span> ${entry.kehadiranPesertaDidik}` : '';
+                    // Keterangan dihilangkan, hanya tampilkan detail wajib
+                    detail = `<span class="font-semibold">Kelas:</span> ${entry.kelasDiajar} ${jamText} <br> <span class="font-semibold">Tujuan/Materi:</span> ${entry.materiDiajar} ${kehadiranText}`;
+                
+                } else if (entry.kegiatan === 'Piket') {
+                    // Keterangan dihilangkan
+                    detail = `Piket ${jamText}`;
+                }
+                else {
+                    // Keterangan dihilangkan
+                    detail = `${entry.kegiatan}`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition duration-150';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${entry.tanggal}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                            ${entry.kegiatan}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        ${detail}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button data-id="${entry.id}" class="delete-btn text-red-600 hover:text-red-900 transition duration-150" title="Hapus Jurnal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                journalEntriesBody.appendChild(row);
+            });
+
+            journalEntriesBody.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const docId = button.getAttribute('data-id');
+                    handleDelete(docId);
+                });
+            });
+        }
+
+        async function handleDelete(docId) {
+            const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus entri jurnal ini?");
+
+            if (confirmDelete) {
+                try {
+                    const docRef = doc(db, `${JOURNAL_COLLECTION_PATH_BASE}${firebaseUid}/jurnal_harian`, docId);
+                    await deleteDoc(docRef);
+                    showModal("Berhasil", "Entri jurnal berhasil dihapus.");
+                } catch (error) {
+                    console.error("Gagal menghapus jurnal:", error);
+                    showModal("Kesalahan Hapus", `Gagal menghapus entri jurnal. Pesan: ${error.message}`);
+                }
+            }
+        }
+
+
+        // --- EVENT LISTENERS ---
+        modalCloseButton.addEventListener('click', hideModal);
+        loginForm.addEventListener('submit', handleLogin);
+        exportTextButton.addEventListener('click', generateSimpleTextReport); 
+        exportHtmlButton.addEventListener('click', generateHtmlReportForDownload); 
+        
+        // NEW LISTENERS for Display Filter
+        filterBulanInput.addEventListener('change', setupRealtimeListener);
+        filterTahunInput.addEventListener('change', setupRealtimeListener);
+
+
+        // --- START APPLICATION ---
+        toggleLoading(true);
+        initializeFirebase();
+    </script>
+    <!-- PWA Setup Script -->
+    <script>
+        // Inline manifest data
+        const manifestData = {
+            "name": "Jurnal Guru",
+            "short_name": "Jurnal Guru",
+            "description": "Aplikasi Jurnal Harian Guru SMP Shidqia",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#ffffff",
+            "theme_color": "#4f46e5",
+            "icons": [
+                // Menggunakan placeholder image yang sesuai dengan tema ikon aplikasi
+                {
+                    "src": "https://placehold.co/192x192/4f46e5/ffffff?text=JG",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": "https://placehold.co/512x512/4f46e5/ffffff?text=JG",
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+            ]
+        };
+
+        // Function to register the PWA manifest
+        function registerPwaManifest() {
+            // 1. Dynamically create manifest.json link using Blob URL
+            const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const manifestLink = document.getElementById('pwa-manifest-link'); // Mengambil link dengan ID yang telah kita tambahkan
+            
+            if (manifestLink) {
+                manifestLink.setAttribute('href', manifestUrl);
+                console.log('PWA Manifest registered with URL:', manifestUrl);
+            }
+            
+            // CATATAN: Pendaftaran Service Worker menggunakan Blob URL ('blob:')
+            // sering diblokir oleh kebijakan keamanan di beberapa browser/hosting (seperti yang terjadi).
+            // Dengan hanya menginjeksikan manifest, aplikasi masih bisa di-install (Add to Home Screen),
+            // tetapi fitur caching offline penuh melalui Service Worker akan bergantung pada lingkungan hosting.
+            if ('serviceWorker' in navigator) {
+                 console.warn("Service Worker registration diabaikan karena kendala Blob URL. Aplikasi masih bisa diinstal, tetapi mungkin tidak berfungsi penuh secara offline.");
+            }
+        }
+
+        // Run registration after the page is fully loaded
+        window.addEventListener('load', registerPwaManifest);
+
+    </script>
+</body>
+</html>
