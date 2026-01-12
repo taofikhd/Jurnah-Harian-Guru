@@ -2,305 +2,386 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jurnal Harian Guru</title>
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jurnal Guru - Shidqia</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- PWA MANIFEST INTEGRATION -->
     <link rel="manifest" id="pwa-manifest-link"> 
-    
-    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Jurnal Guru">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#4f46e5">
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f9fb;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
         }
-        .form-input {
-            @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out;
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        .form-select {
-            @apply w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out;
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .active-tab {
+            @apply text-indigo-600;
+        }
+        .active-tab svg {
+            @apply text-indigo-600 fill-current;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            @apply ring-2 ring-indigo-500 border-indigo-500;
+        }
+        .page-view {
+            transition: opacity 0.2s ease-in-out;
+        }
+        .hidden-view {
+            display: none;
+            opacity: 0;
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="safe-bottom">
 
-    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center">
         <div class="flex flex-col items-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-            <p class="text-white mt-4">Memuat aplikasi...</p>
+            <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <p class="text-indigo-600 mt-4 font-semibold tracking-wide">SHIDQIA JURNAL</p>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto">
-        <header class="bg-white shadow-md p-6 rounded-xl mb-4">
-            <h1 class="text-3xl font-extrabold text-indigo-700">Aplikasi Jurnal Harian Guru</h1>
-            <p class="text-gray-600 mt-2 text-sm md:text-base">Rekapitulasi Kegiatan Harian Tenaga Pendidik</p>
-            
-            <!-- Banner Instalasi (Muncul jika aplikasi bisa diinstal) -->
-            <div id="install-banner" class="mt-4 p-4 bg-indigo-600 rounded-lg text-white flex flex-col md:flex-row items-center justify-between hidden">
-                <div class="flex items-center mb-3 md:mb-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    <p class="text-sm font-medium">Instal aplikasi di HP agar lebih mudah diakses!</p>
+    <!-- Login Container -->
+    <section id="login-container" class="min-h-screen flex items-center justify-center p-6 bg-white hidden">
+        <div class="w-full max-w-sm">
+            <div class="text-center mb-10">
+                <!-- Logo Baru dari Quizizz -->
+                <div class="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-4 overflow-hidden shadow-lg border-4 border-indigo-50">
+                    <img src="https://quizizz.com/_media/quizzes/a9d2f653-3f07-4f73-9ed8-74aa87668a7d" alt="Logo Shidqia" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200/4f46e5/ffffff?text=SJ'">
                 </div>
-                <button id="install-button" class="bg-white text-indigo-600 px-6 py-2 rounded-full font-bold text-sm shadow-md hover:bg-gray-100 transition duration-150">
-                    Instal Sekarang
-                </button>
+                <h2 class="text-3xl font-extrabold text-gray-900">Selamat Datang</h2>
+                <p class="text-gray-500 mt-2">Masuk dengan ID Guru Shidqia Anda</p>
             </div>
 
-            <div id="auth-info" class="text-sm mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200 flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-                <span id="user-status" class="font-medium text-indigo-800">Menunggu verifikasi ID Guru...</span>
-                <button id="logout-button" class="hidden text-red-600 hover:text-white hover:bg-red-600 border border-red-600 px-4 py-1.5 rounded-lg font-bold transition duration-150 text-xs">
-                    Logout
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">ID GURU (6 DIGIT)</label>
+                    <input type="text" id="id-guru-input" maxlength="6" pattern="\d{6}" required placeholder="000000" class="w-full bg-gray-50 border-gray-200 border-2 rounded-2xl p-4 text-center text-2xl font-bold tracking-[0.5em] focus:bg-white transition-all">
+                </div>
+
+                <div id="login-history-container" class="hidden">
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">ID Terakhir:</p>
+                    <div id="login-history-list" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <button type="submit" id="login-button" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-[0.98] transition-all flex items-center justify-center">
+                    <span id="login-text">Masuk</span>
+                    <div id="login-spinner" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin ml-3"></div>
+                </button>
+                <div id="login-error" class="text-red-500 text-sm text-center hidden font-medium"></div>
+            </form>
+        </div>
+    </section>
+
+    <!-- App Container -->
+    <div id="app-container" class="hidden pb-24">
+        <!-- Header -->
+        <header class="p-6 pb-2">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-400 text-sm font-medium">Halo, selamat bekerja!</p>
+                    <h2 id="user-display-name" class="text-2xl font-bold text-gray-900">...</h2>
+                </div>
+                <button id="logout-button" class="p-2 bg-red-50 text-red-500 rounded-xl active:scale-95 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                 </button>
             </div>
         </header>
-        
-        <!-- === SECTION LOGIN === -->
-        <section id="login-container" class="bg-white p-6 shadow-xl rounded-xl max-sm:max-w-xs mx-auto my-16 hidden">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Login Guru</h2>
-            <p class="text-gray-600 mb-6 text-center text-sm">Masukkan 6 digit ID Guru Anda.</p>
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label for="id-guru-input" class="block text-sm font-medium text-gray-700 mb-1">ID Guru</label>
-                    <input type="text" id="id-guru-input" placeholder="Contoh: 123456" required class="form-input text-center text-xl tracking-widest" maxlength="6" pattern="\d{6}">
-                </div>
 
-                <!-- Riwayat ID -->
-                <div id="login-history-container" class="hidden">
-                    <p class="text-xs text-gray-500 mb-2">ID Terakhir digunakan:</p>
-                    <div id="login-history-list" class="flex flex-wrap gap-2">
-                        <!-- Riwayat akan muncul di sini -->
+        <!-- Banner Install (Android/PC) -->
+        <div id="install-banner" class="mx-6 mb-6 bg-indigo-600 rounded-3xl p-5 text-white flex items-center justify-between shadow-xl shadow-indigo-100 hidden">
+            <div class="flex-1">
+                <h3 class="font-bold text-sm">Instal Aplikasi</h3>
+                <p class="text-xs opacity-80 mt-1">Akses jurnal lebih mudah di layar utama HP Anda.</p>
+            </div>
+            <button id="install-button" class="bg-white text-indigo-600 text-xs font-bold px-4 py-2 rounded-xl">Instal</button>
+        </div>
+
+        <!-- Tip Instal iPhone (Tampil hanya di iOS) -->
+        <div id="ios-install-tip" class="mx-6 mb-6 bg-amber-50 rounded-3xl p-5 border border-amber-200 flex items-start space-x-4 hidden">
+            <div class="bg-amber-100 p-2 rounded-xl text-amber-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-bold text-amber-900 text-sm italic">Tips iPhone:</h3>
+                <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+                    Instal aplikasi dengan menekan tombol <b>Bagikan (Share)</b> di Safari, lalu pilih <b>"Tambahkan ke Layar Utama"</b>.
+                </p>
+            </div>
+        </div>
+
+        <!-- VIEW: Dashboard (Beranda) -->
+        <section id="view-home" class="page-view p-6 space-y-6">
+            <!-- Stats Card -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="bg-indigo-50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
                     </div>
+                    <p class="text-xs text-gray-400 font-bold uppercase">Bulan Ini</p>
+                    <h3 id="stat-count-month" class="text-2xl font-black text-gray-900 mt-1">0</h3>
                 </div>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="bg-emerald-50 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-tight">Hari Ini</p>
+                    <h3 id="stat-count-today" class="text-2xl font-black text-gray-900 mt-1">0</h3>
+                </div>
+            </div>
 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-lg flex items-center justify-center" id="login-button">
-                    <svg id="login-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span id="login-text">Masuk</span>
-                </button>
-                <div id="login-error" class="text-red-500 text-sm mt-2 text-center hidden font-medium"></div>
-            </form>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-gray-800 mb-4">Aktivitas Terakhir</h3>
+                <div id="home-recent-list" class="space-y-4">
+                    <p class="text-center text-sm text-gray-400 py-4">Memuat riwayat...</p>
+                </div>
+                <button onclick="switchView('history')" class="w-full mt-4 text-indigo-600 font-bold text-sm py-2">Lihat Semua Riwayat</button>
+            </div>
         </section>
 
-        <main id="app-container" class="space-y-8 hidden">
-            <!-- Form Input Jurnal -->
-            <section class="bg-white p-6 shadow-xl rounded-xl">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Input Jurnal Baru</h2>
-                <form id="journal-form" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Hari/Tanggal</label>
-                            <input type="date" id="tanggal" required class="form-input">
+        <!-- VIEW: Riwayat -->
+        <section id="view-history" class="page-view hidden-view p-6 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-900">Riwayat Jurnal</h2>
+            
+            <div class="flex gap-2">
+                <select id="filter-bulan" class="flex-1 bg-white border border-gray-200 rounded-2xl p-3 font-semibold text-gray-700 text-sm">
+                    <option value="01">Januari</option><option value="02">Februari</option>
+                    <option value="03">Maret</option><option value="04">April</option>
+                    <option value="05">Mei</option><option value="06">Juni</option>
+                    <option value="07">Juli</option><option value="08">Agustus</option>
+                    <option value="09">September</option><option value="10">Oktober</option>
+                    <option value="11">November</option><option value="12">Desember</option>
+                </select>
+                <input type="number" id="filter-tahun" class="w-24 bg-white border border-gray-200 rounded-2xl p-3 font-semibold text-gray-700 text-sm text-center">
+            </div>
+
+            <div id="journal-list-content" class="space-y-4">
+                <!-- Riwayat Rendered -->
+            </div>
+        </section>
+
+        <!-- VIEW: Ekspor -->
+        <section id="view-export" class="page-view hidden-view p-6 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-900">Ekspor Laporan</h2>
+            <div class="bg-indigo-50 p-5 rounded-3xl border border-indigo-100">
+                <p class="text-indigo-800 text-sm font-medium leading-relaxed">Pilih periode laporan untuk diunduh dalam format HTML (Word) atau Teks.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Pilih Bulan</label>
+                    <select id="bulan-export" class="form-select">
+                        <option value="01">Januari</option><option value="02">Februari</option>
+                        <option value="03">Maret</option><option value="04">April</option>
+                        <option value="05">Mei</option><option value="06">Juni</option>
+                        <option value="07">Juli</option><option value="08">Agustus</option>
+                        <option value="09">September</option><option value="10">Oktober</option>
+                        <option value="11">November</option><option value="12">Desember</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Tahun</label>
+                    <input type="number" id="tahun-export" class="form-input">
+                </div>
+                <div class="grid grid-cols-1 gap-3 pt-4">
+                    <button id="export-html-button" class="bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-100 flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Ekspor ke Word (HTML)</span>
+                    </button>
+                    <button id="export-text-button" class="bg-gray-100 text-gray-700 font-bold py-4 rounded-2xl flex items-center justify-center space-x-2">
+                        <span>Ekspor Teks (.txt)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODAL: Input Jurnal Baru -->
+        <div id="modal-input" class="fixed inset-0 z-50 flex items-end justify-center hidden">
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onclick="closeInputModal()"></div>
+            <div class="relative w-full max-w-lg bg-white rounded-t-[40px] shadow-2xl p-8 max-h-[90vh] overflow-y-auto transform translate-y-full transition-transform duration-300 ease-out" id="modal-content">
+                <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Jurnal Baru</h2>
+                
+                <form id="journal-form" class="space-y-5">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-1">
+                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Tanggal</label>
+                            <input type="date" id="tanggal" required class="form-input text-sm p-4 rounded-2xl border-2 border-gray-100">
                         </div>
-                        <div>
-                            <label for="kegiatan" class="block text-sm font-medium text-gray-700 mb-1">Kegiatan</label>
-                            <select id="kegiatan" required class="form-select">
-                                <option value="" disabled selected>Pilih Jenis Kegiatan</option>
+                        <div class="col-span-1">
+                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Kegiatan</label>
+                            <select id="kegiatan" required class="form-select text-sm p-4 rounded-2xl border-2 border-gray-100">
+                                <option value="" disabled selected>Pilih...</option>
                                 <option value="Mengajar">Mengajar</option>
                                 <option value="Piket">Piket</option>
-                                <option value="Seminar/Workshop">Seminar/Workshop</option>
-                                <option value="Mengisi Nilai/Raport">Mengisi Nilai/Raport</option>
+                                <option value="Seminar/Workshop">Seminar</option>
+                                <option value="Mengisi Nilai/Raport">Nilai/Raport</option>
                                 <option value="Lainnya">Lainnya</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Jam Pelajaran -->
-                    <div id="jam-pelajaran-field" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
-                         <div class="md:col-span-1">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Jam Ke-</label>
-                            <div class="flex space-x-2">
-                                <select id="jam-mulai" class="form-select w-1/2">
-                                    <option value="" disabled selected>Mulai</option>
-                                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                                    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-                                    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
-                                </select>
-                                <select id="jam-selesai" class="form-select w-1/2">
-                                    <option value="" disabled selected>Selesai</option>
-                                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                                    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-                                    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
-                                </select>
-                            </div>
+                    <div id="jam-pelajaran-field" class="hidden grid grid-cols-2 gap-4">
+                        <div class="col-span-1">
+                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Mulai Jam</label>
+                            <select id="jam-mulai" class="form-select text-sm">
+                                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                                <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                                <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                            </select>
+                        </div>
+                        <div class="col-span-1">
+                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Selesai Jam</label>
+                            <select id="jam-selesai" class="form-select text-sm">
+                                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                                <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                                <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                            </select>
                         </div>
                     </div>
-                    
-                    <!-- Detail Mengajar -->
-                    <div id="teaching-fields" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+
+                    <div id="teaching-fields" class="hidden space-y-4">
                         <div>
-                            <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas yang Diajar</label>
-                            <select id="kelas" class="form-select">
+                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Kelas</label>
+                            <select id="kelas" class="form-select text-sm">
                                 <option value="" disabled selected>Pilih Kelas</option>
                                 <optgroup label="Kelas 7">
-                                    <option value="7 Mekkah">Mekkah</option><option value="7 Madinah">Madinah</option>
-                                    <option value="7 Thaif">Thaif</option><option value="7 Riyadh">Riyadh</option>
-                                    <option value="7 Jeddah">Jeddah</option>
+                                    <option value="7 Mekkah">7 Mekkah</option><option value="7 Madinah">7 Madinah</option>
+                                    <option value="7 Thaif">7 Thaif</option><option value="7 Riyadh">7 Riyadh</option>
+                                    <option value="7 Jeddah">7 Jeddah</option>
                                 </optgroup>
                                 <optgroup label="Kelas 8">
-                                    <option value="8 Alexandria">Alexandria</option><option value="8 Abu Dhabi">Abu Dhabi</option>
-                                    <option value="8 Andalusia">Andalusia</option><option value="8 Istanbul">Istanbul</option>
-                                    <option value="8 Casablanca">Casablanca</option><option value="8 Cordova">Cordova</option>
-                                    <option value="8 Sevilla">Sevilla</option>
+                                    <option value="8 Alexandria">8 Alexandria</option><option value="8 Abu Dhabi">8 Abu Dhabi</option>
+                                    <option value="8 Andalusia">8 Andalusia</option><option value="8 Istanbul">8 Istanbul</option>
+                                    <option value="8 Casablanca">8 Casablanca</option><option value="8 Cordova">8 Cordova</option>
+                                    <option value="8 Sevilla">8 Sevilla</option>
                                 </optgroup>
                                 <optgroup label="Kelas 9">
-                                    <option value="9 Qatar">Qatar</option><option value="9 Kuwait">Kuwait</option>
-                                    <option value="9 Albania">Albania</option><option value="9 Bosnia">Bosnia</option>
-                                    <option value="9 Maroko">Maroko</option><option value="9 Tunish">Tunish</option>
+                                    <option value="9 Qatar">9 Qatar</option><option value="9 Kuwait">9 Kuwait</option>
+                                    <option value="9 Albania">9 Albania</option><option value="9 Bosnia">9 Bosnia</option>
+                                    <option value="9 Maroko">9 Maroko</option><option value="9 Tunish">9 Tunish</option>
                                 </optgroup>
                             </select>
                         </div>
-                        <div class="md:col-span-1">
-                            <label for="materi" class="block text-sm font-medium text-gray-700 mb-1">Materi Pembelajaran</label>
-                            <input type="text" id="materi" placeholder="Contoh: Operasi Hitung" class="form-input">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Materi Pembelajaran</label>
+                            <input type="text" id="materi" placeholder="Contoh: Operasi Hitung" class="form-input text-sm">
                         </div>
-                        <div class="md:col-span-1">
-                            <label for="kehadiran" class="block text-sm font-medium text-gray-700 mb-1">Ket. Kehadiran</label>
-                            <input type="text" id="kehadiran" placeholder="Sakit/Izin/Alfa" class="form-input">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Absensi (S/I/A)</label>
+                            <input type="text" id="kehadiran" placeholder="Contoh: Andi (S), Budi (I)" class="form-input text-sm">
                         </div>
                     </div>
 
-                    <!-- Detail Piket -->
-                    <div id="piket-fields" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
-                        <div>
-                            <label for="lantai" class="block text-sm font-medium text-gray-700 mb-1">Pilih Lantai</label>
-                            <select id="lantai" class="form-select">
-                                <option value="" disabled selected>Pilih Lantai</option>
-                                <option value="Lantai 1">Lantai 1</option>
-                                <option value="Lantai 2">Lantai 2</option>
-                                <option value="Lantai 3">Lantai 3</option>
-                                <option value="Lantai 4">Lantai 4</option>
-                            </select>
-                        </div>
+                    <div id="piket-fields" class="hidden">
+                        <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Lokasi Lantai</label>
+                        <select id="lantai" class="form-select text-sm">
+                            <option value="Lantai 1">Lantai 1</option><option value="Lantai 2">Lantai 2</option>
+                            <option value="Lantai 3">Lantai 3</option><option value="Lantai 4">Lantai 4</option>
+                        </select>
                     </div>
 
-                    <!-- Detail Lainnya -->
-                    <div id="other-fields" class="grid grid-cols-1 md:grid-cols-1 gap-4 hidden">
-                        <div>
-                            <label for="nama-kegiatan-lainnya" class="block text-sm font-medium text-gray-700 mb-1">Nama Kegiatan</label>
-                            <input type="text" id="nama-kegiatan-lainnya" placeholder="Masukkan nama kegiatan yang dilakukan" class="form-input">
-                        </div>
+                    <div id="other-fields" class="hidden">
+                        <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Nama Kegiatan</label>
+                        <input type="text" id="nama-kegiatan-lainnya" placeholder="Deskripsikan kegiatan..." class="form-input text-sm">
                     </div>
-                    
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-lg flex items-center justify-center" id="submit-button">
-                        <svg id="submit-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span id="submit-text">Simpan Jurnal</span>
+
+                    <button type="submit" id="submit-button" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-3xl shadow-xl shadow-indigo-100 flex items-center justify-center">
+                        <span id="submit-text">Simpan Sekarang</span>
+                        <div id="submit-spinner" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin ml-3"></div>
                     </button>
                 </form>
-            </section>
-            
-            <!-- Ekspor Rekap Bulanan -->
-            <section class="bg-white p-6 shadow-xl rounded-xl">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Ekspor Rekap Jurnal</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div class="md:col-span-1">
-                        <label for="bulan-export" class="block text-sm font-medium text-gray-700 mb-1">Pilih Bulan</label>
-                        <select id="bulan-export" required class="form-select">
-                            <option value="01">Januari</option><option value="02">Februari</option>
-                            <option value="03">Maret</option><option value="04">April</option>
-                            <option value="05">Mei</option><option value="06">Juni</option>
-                            <option value="07">Juli</option><option value="08">Agustus</option>
-                            <option value="09">September</option><option value="10">Oktober</option>
-                            <option value="11">November</option><option value="12">Desember</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-1">
-                        <label for="tahun-export" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
-                        <input type="number" id="tahun-export" required class="form-input">
-                    </div>
-                     <div class="md:col-span-1">
-                         <button id="export-html-button" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md text-sm">
-                            Ekspor HTML (Word)
-                        </button>
-                    </div>
-                    <div class="md:col-span-1">
-                         <button id="export-text-button" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md text-sm">
-                            Ekspor Teks (.txt)
-                        </button>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Daftar Jurnal Harian -->
-            <section class="bg-white p-6 shadow-xl rounded-xl">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Riwayat Jurnal <span id="current-period-display" class="text-indigo-700"></span></h2>
-                
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end mb-6">
-                    <div>
-                        <label for="filter-bulan" class="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
-                        <select id="filter-bulan" class="form-select">
-                            <option value="01">Januari</option><option value="02">Februari</option>
-                            <option value="03">Maret</option><option value="04">April</option>
-                            <option value="05">Mei</option><option value="06">Juni</option>
-                            <option value="07">Juli</option><option value="08">Agustus</option>
-                            <option value="09">September</option><option value="10">Oktober</option>
-                            <option value="11">November</option><option value="12">Desember</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="filter-tahun" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
-                        <input type="number" id="filter-tahun" required class="form-input">
-                    </div>
-                </div>
+            </div>
+        </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <th class="px-6 py-3">Tanggal</th>
-                                <th class="px-6 py-3">Kegiatan</th>
-                                <th class="px-6 py-3">Detail</th>
-                                <th class="px-6 py-3">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="journal-entries" class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500 text-sm">Memuat data...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+        <!-- Floating Action Button -->
+        <button onclick="openInputModal()" class="fixed right-6 bottom-24 bg-indigo-600 text-white w-16 h-16 rounded-3xl shadow-2xl shadow-indigo-400 flex items-center justify-center active:scale-90 transition-transform z-40">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+            </svg>
+        </button>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 glass-nav h-20 border-t border-gray-100 flex items-center justify-around z-40 px-4">
+            <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center justify-center w-full active-tab">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Beranda</span>
+            </button>
+            <button onclick="switchView('history')" id="nav-history" class="flex flex-col items-center justify-center w-full text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Riwayat</span>
+            </button>
+            <button onclick="switchView('export')" id="nav-export" class="flex flex-col items-center justify-center w-full text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Ekspor</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- Modal Alert -->
-    <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full transform transition-all duration-300 scale-95">
-            <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-3">Pesan</h3>
-            <p id="modal-message" class="text-gray-600 mb-6"></p>
-            <button id="modal-close-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg">Tutup</button>
+    <!-- Modal Konfirmasi Kustom -->
+    <div id="custom-modal-confirm" class="fixed inset-0 z-[300] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl text-center">
+            <h3 id="modal-confirm-title" class="text-xl font-extrabold text-gray-900 mb-2">Konfirmasi</h3>
+            <p id="modal-confirm-message" class="text-gray-500 mb-8"></p>
+            <div class="grid grid-cols-2 gap-3">
+                <button id="modal-confirm-no" class="bg-gray-100 text-gray-700 font-bold py-4 rounded-2xl active:scale-95 transition-transform">Batal</button>
+                <button id="modal-confirm-yes" class="bg-red-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-red-100 active:scale-95 transition-transform">Ya, Logout</button>
+            </div>
         </div>
     </div>
-    
-    <!-- Firebase SDK & Logic -->
+
+    <!-- Custom Modal Popup Alert -->
+    <div id="custom-modal-alert" class="fixed inset-0 z-[200] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl text-center">
+            <h3 id="modal-alert-title" class="text-xl font-extrabold text-gray-900 mb-2">Pesan</h3>
+            <p id="modal-alert-message" class="text-gray-500 mb-8"></p>
+            <button onclick="closeAlertModal()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg">Selesai</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, addDoc, onSnapshot, collection, query, where, deleteDoc, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Konfigurasi Webhook Google Sheets
-        const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGPe_5m6kxaCrmFR2ib6YyNjwBzEgWxoXYKnLPiGFIahW_D9BWPQUsF0aDZwPZfyE1/exec'; 
-
-        // Konfigurasi Firebase
+        // Konfigurasi
         const firebaseConfig = {
             apiKey: "AIzaSyBrNuO3WIgBiyHZDE3_7YeZFb6382Psmqg",
             authDomain: "jurnal-harian-guru-1b4cd.firebaseapp.com",
@@ -311,11 +392,12 @@
             measurementId: "G-TVKVZBYEZQ"
         };
 
-        const appId = 'jurnal-guru-shidqia';
+        const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGPe_5m6kxaCrmFR2ib6YyNjwBzEgWxoXYKnLPiGFIahW_D9BWPQUsF0aDZwPZfyE1/exec'; 
+        const appIdPrefix = 'jurnal-guru-shidqia';
 
         let app, db, auth, firebaseUid = null; 
-        let sheetIdGuru = null, sheetGuruName = null, sheetGuruMataPelajaran = null;
-        let journalDataCache = []; 
+        let currentUserIdGuru = null, currentUserName = null;
+        let journalDataCache = [];
 
         const MANUAL_SUBJECT_MAP = {
             '856618': 'Bahasa Indonesia', '496900': 'Bahasa Indonesia', '224381': 'Bahasa Indonesia',
@@ -327,191 +409,228 @@
             '525669': 'Seni Budaya', '348198': 'PJOK', '231698': 'PJOK', '911981': 'Bahasa Arab', '823347': 'BK'
         };
 
-        const JOURNAL_PATH = `/artifacts/${appId}/users/`; 
+        const JOURNAL_PATH_BASE = `/artifacts/${appIdPrefix}/users/`;
 
-        // Elements
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const appContainer = document.getElementById('app-container');
-        const loginContainer = document.getElementById('login-container');
-        const userStatusSpan = document.getElementById('user-status');
-        const journalForm = document.getElementById('journal-form');
-        const journalEntriesBody = document.getElementById('journal-entries');
-        const kegiatanSelect = document.getElementById('kegiatan');
-        const teachingFields = document.getElementById('teaching-fields');
-        const piketFields = document.getElementById('piket-fields');
-        const otherFields = document.getElementById('other-fields');
-        const jamPelajaranField = document.getElementById('jam-pelajaran-field');
-        const logoutButton = document.getElementById('logout-button');
-        const idGuruInput = document.getElementById('id-guru-input');
-        const loginHistoryContainer = document.getElementById('login-history-container');
-        const loginHistoryList = document.getElementById('login-history-list');
+        // UI Helpers
+        window.switchView = (target) => {
+            const views = ['home', 'history', 'export'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const nav = document.getElementById(`nav-${navMap(v)}`);
+                if (v === target) {
+                    el.classList.remove('hidden-view');
+                    if(nav) nav.classList.add('active-tab');
+                } else {
+                    el.classList.add('hidden-view');
+                    if(nav) nav.classList.remove('active-tab');
+                }
+            });
+            if (target === 'history') setupRealtimeListener();
+        };
 
-        function showModal(title, message) {
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-message').textContent = message;
-            document.getElementById('custom-modal').classList.remove('hidden');
+        const navMap = (v) => v === 'home' ? 'home' : (v === 'history' ? 'history' : 'export');
+
+        window.openInputModal = () => {
+            const modal = document.getElementById('modal-input');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => content.classList.remove('translate-y-full'), 10);
+            document.getElementById('tanggal').valueAsDate = new Date();
+        };
+
+        window.closeInputModal = () => {
+            const modal = document.getElementById('modal-input');
+            const content = document.getElementById('modal-content');
+            content.classList.add('translate-y-full');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        };
+
+        window.showAlert = (title, message) => {
+            document.getElementById('modal-alert-title').textContent = title;
+            document.getElementById('modal-alert-message').textContent = message;
+            document.getElementById('custom-modal-alert').classList.remove('hidden');
+        };
+
+        window.closeAlertModal = () => {
+            document.getElementById('custom-modal-alert').classList.add('hidden');
+        };
+
+        window.showConfirm = (title, message, onYes) => {
+            const modal = document.getElementById('custom-modal-confirm');
+            document.getElementById('modal-confirm-title').textContent = title;
+            document.getElementById('modal-confirm-message').textContent = message;
+            modal.classList.remove('hidden');
+
+            const btnYes = document.getElementById('modal-confirm-yes');
+            const btnNo = document.getElementById('modal-confirm-no');
+
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                btnYes.onclick = null;
+                btnNo.onclick = null;
+            };
+
+            btnYes.onclick = () => {
+                onYes();
+                cleanup();
+            };
+
+            btnNo.onclick = cleanup;
+        };
+
+        function isIOS() {
+            return [
+                'iPad Simulator', 'iPhone Simulator', 'iPod Simulator',
+                'iPad', 'iPhone', 'iPod'
+            ].includes(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
         }
 
-        function hideModal() { document.getElementById('custom-modal').classList.add('hidden'); }
-        function toggleLoading(isLoading) { isLoading ? loadingOverlay.classList.remove('hidden') : loadingOverlay.classList.add('hidden'); }
-
-        async function sendToGoogleSheet(data) {
+        async function start() {
             try {
-                await fetch(GOOGLE_SHEET_WEBHOOK_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify({
-                        ...data,
-                        'Nama Guru': sheetGuruName,
-                        'ID Guru': sheetIdGuru,
-                        'Waktu Simpan': new Date().toLocaleString('id-ID')
-                    }) 
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user) {
+                        await signInAnonymously(auth);
+                    } else {
+                        firebaseUid = user.uid;
+                        checkSession();
+                    }
                 });
-            } catch (e) { console.warn("Webhook failed"); }
+            } catch (e) {
+                console.error("Firebase Error", e);
+            }
         }
 
-        function showLoginScreen() {
-            toggleLoading(false);
-            loginContainer.classList.remove('hidden');
-            appContainer.classList.add('hidden');
-            logoutButton.classList.add('hidden');
-            userStatusSpan.textContent = "Silakan login untuk mengakses jurnal.";
-            displayLoginHistory();
+        function checkSession() {
+            const storedId = localStorage.getItem('jurnalGuruId');
+            if (storedId && MANUAL_SUBJECT_MAP[storedId]) {
+                currentUserIdGuru = storedId;
+                currentUserName = localStorage.getItem('jurnalGuruName');
+                setupApp();
+            } else {
+                showLogin();
+            }
         }
 
-        function showMainApp() {
-            toggleLoading(false);
-            loginContainer.classList.add('hidden');
-            appContainer.classList.remove('hidden');
-            logoutButton.classList.remove('hidden');
-            userStatusSpan.innerHTML = `Login: <b>${sheetGuruName}</b>`;
+        function showLogin() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-container').classList.remove('hidden');
+            renderLoginHistory();
+        }
+
+        function setupApp() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('user-display-name').textContent = currentUserName;
             
-            const now = new Date();
-            const curBulan = String(now.getMonth() + 1).padStart(2, '0');
-            const curTahun = now.getFullYear();
+            if (isIOS()) {
+                document.getElementById('ios-install-tip').classList.remove('hidden');
+            }
 
-            document.getElementById('filter-bulan').value = curBulan;
-            document.getElementById('filter-tahun').value = curTahun;
-            document.getElementById('bulan-export').value = curBulan;
-            document.getElementById('tahun-export').value = curTahun;
+            const now = new Date();
+            document.getElementById('filter-tahun').value = now.getFullYear();
+            document.getElementById('tahun-export').value = now.getFullYear();
+            document.getElementById('filter-bulan').value = String(now.getMonth() + 1).padStart(2, '0');
 
             setupRealtimeListener();
         }
 
-        function displayLoginHistory() {
+        function renderLoginHistory() {
             const history = JSON.parse(localStorage.getItem('jurnalGuruHistory') || '[]');
+            const list = document.getElementById('login-history-list');
             if (history.length > 0) {
-                loginHistoryContainer.classList.remove('hidden');
-                loginHistoryList.innerHTML = '';
+                document.getElementById('login-history-container').classList.remove('hidden');
+                list.innerHTML = '';
                 history.forEach(id => {
-                    const badge = document.createElement('button');
-                    badge.className = "bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-200 text-xs font-bold hover:bg-indigo-100 transition";
-                    badge.textContent = id;
-                    badge.type = "button";
-                    badge.onclick = () => { idGuruInput.value = id; };
-                    loginHistoryList.appendChild(badge);
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = "bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold active:bg-indigo-600 active:text-white transition-all";
+                    btn.textContent = id;
+                    btn.onclick = () => { document.getElementById('id-guru-input').value = id; };
+                    list.appendChild(btn);
                 });
-            } else {
-                loginHistoryContainer.classList.add('hidden');
             }
         }
-
-        function saveToHistory(id) {
-            let history = JSON.parse(localStorage.getItem('jurnalGuruHistory') || '[]');
-            if (!history.includes(id)) {
-                history.unshift(id); // Tambah ke awal
-                history = history.slice(0, 5); // Simpan maksimal 5 riwayat
-                localStorage.setItem('jurnalGuruHistory', JSON.stringify(history));
-            }
-        }
-
-        async function init() {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            
-            onAuthStateChanged(auth, async (user) => {
-                if (!user) {
-                    await signInAnonymously(auth);
-                } else {
-                    firebaseUid = user.uid;
-                    const storedId = localStorage.getItem('jurnalGuruId');
-                    if (storedId && MANUAL_SUBJECT_MAP[storedId]) {
-                        sheetIdGuru = storedId;
-                        sheetGuruName = localStorage.getItem('jurnalGuruName');
-                        sheetGuruMataPelajaran = MANUAL_SUBJECT_MAP[storedId];
-                        showMainApp();
-                    } else {
-                        showLoginScreen();
-                    }
-                }
-            });
-        }
-
-        logoutButton.addEventListener('click', () => {
-            if (confirm("Apakah Anda yakin ingin logout?")) {
-                localStorage.removeItem('jurnalGuruId');
-                localStorage.removeItem('jurnalGuruName');
-                showLoginScreen();
-            }
-        });
-
-        kegiatanSelect.addEventListener('change', () => {
-            const v = kegiatanSelect.value;
-            teachingFields.classList.toggle('hidden', v !== 'Mengajar');
-            piketFields.classList.toggle('hidden', v !== 'Piket');
-            otherFields.classList.toggle('hidden', v !== 'Lainnya');
-            jamPelajaranField.classList.toggle('hidden', v !== 'Mengajar' && v !== 'Piket');
-        });
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = idGuruInput.value;
-            const err = document.getElementById('login-error');
+            const id = document.getElementById('id-guru-input').value;
             const btn = document.getElementById('login-button');
-            
-            err.classList.add('hidden');
+            const spinner = document.getElementById('login-spinner');
+            const txt = document.getElementById('login-text');
+
             btn.disabled = true;
-            document.getElementById('login-spinner').classList.remove('hidden');
+            spinner.classList.remove('hidden');
+            txt.textContent = 'Memverifikasi...';
 
             try {
                 const res = await fetch(`${GOOGLE_SHEET_WEBHOOK_URL}?id=${id}`);
                 const data = await res.json();
                 if (data.verified) {
-                    sheetIdGuru = data.id;
-                    sheetGuruName = data.name;
-                    sheetGuruMataPelajaran = MANUAL_SUBJECT_MAP[id] || "Umum";
-                    localStorage.setItem('jurnalGuruId', sheetIdGuru);
-                    localStorage.setItem('jurnalGuruName', sheetGuruName);
-                    saveToHistory(id);
-                    showMainApp();
+                    currentUserIdGuru = data.id;
+                    currentUserName = data.name;
+                    localStorage.setItem('jurnalGuruId', data.id);
+                    localStorage.setItem('jurnalGuruName', data.name);
+                    
+                    let history = JSON.parse(localStorage.getItem('jurnalGuruHistory') || '[]');
+                    if (!history.includes(id)) {
+                        history.unshift(id);
+                        localStorage.setItem('jurnalGuruHistory', JSON.stringify(history.slice(0, 5)));
+                    }
+                    setupApp();
                 } else {
-                    err.textContent = "ID tidak terdaftar.";
-                    err.classList.remove('hidden');
+                    document.getElementById('login-error').textContent = "ID tidak ditemukan.";
+                    document.getElementById('login-error').classList.remove('hidden');
                 }
             } catch {
-                err.textContent = "Gagal verifikasi.";
-                err.classList.remove('hidden');
+                document.getElementById('login-error').textContent = "Koneksi gagal.";
+                document.getElementById('login-error').classList.remove('hidden');
             } finally {
                 btn.disabled = false;
-                document.getElementById('login-spinner').classList.add('hidden');
+                spinner.classList.add('hidden');
+                txt.textContent = 'Masuk';
             }
         });
 
-        journalForm.addEventListener('submit', async (e) => {
+        document.getElementById('logout-button').onclick = () => {
+            window.showConfirm("Konfirmasi Logout", "Apakah Anda yakin ingin keluar dari aplikasi?", () => {
+                localStorage.removeItem('jurnalGuruId');
+                localStorage.removeItem('jurnalGuruName');
+                window.location.reload();
+            });
+        };
+
+        document.getElementById('kegiatan').onchange = (e) => {
+            const v = e.target.value;
+            document.getElementById('teaching-fields').classList.toggle('hidden', v !== 'Mengajar');
+            document.getElementById('piket-fields').classList.toggle('hidden', v !== 'Piket');
+            document.getElementById('other-fields').classList.toggle('hidden', v !== 'Lainnya');
+            document.getElementById('jam-pelajaran-field').classList.toggle('hidden', v !== 'Mengajar' && v !== 'Piket');
+        };
+
+        document.getElementById('journal-form').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-button');
+            const spinner = document.getElementById('submit-spinner');
+            const txt = document.getElementById('submit-text');
+
             btn.disabled = true;
-            document.getElementById('submit-spinner').classList.remove('hidden');
+            spinner.classList.remove('hidden');
+            txt.textContent = 'Menyimpan...';
 
             try {
-                const keg = kegiatanSelect.value;
+                const keg = document.getElementById('kegiatan').value;
                 const data = {
                     tanggal: document.getElementById('tanggal').value,
                     kegiatan: keg,
                     jamMulai: document.getElementById('jam-mulai').value || null,
                     jamSelesai: document.getElementById('jam-selesai').value || null,
-                    sheetIdGuru: sheetIdGuru,
+                    sheetIdGuru: currentUserIdGuru,
                     timestamp: Timestamp.now()
                 };
 
@@ -525,13 +644,7 @@
                     data.namaKegiatanLainnya = document.getElementById('nama-kegiatan-lainnya').value;
                 }
 
-                await addDoc(collection(db, `${JOURNAL_PATH}${firebaseUid}/jurnal_harian`), data);
-                showModal("Berhasil", "Jurnal tersimpan.");
-                journalForm.reset();
-                teachingFields.classList.add('hidden');
-                piketFields.classList.add('hidden');
-                otherFields.classList.add('hidden');
-                jamPelajaranField.classList.add('hidden');
+                await addDoc(collection(db, `${JOURNAL_PATH_BASE}${firebaseUid}/jurnal_harian`), data);
                 
                 const sheetData = {
                     Tanggal: data.tanggal,
@@ -542,152 +655,172 @@
                     'Kehadiran Peserta Didik': data.kehadiranPesertaDidik || '',
                     'Keterangan Lainnya': keg === 'Piket' ? data.lantai : (keg === 'Lainnya' ? data.namaKegiatanLainnya : '')
                 };
-                sendToGoogleSheet(sheetData);
-            } catch {
-                showModal("Gagal", "Kesalahan penyimpanan.");
+                
+                await fetch(GOOGLE_SHEET_WEBHOOK_URL, { 
+                    method: 'POST', mode: 'no-cors', 
+                    body: JSON.stringify({...sheetData, 'Nama Guru': currentUserName, 'ID Guru': currentUserIdGuru, 'Waktu Simpan': new Date().toLocaleString()})
+                });
+
+                closeInputModal();
+                showAlert("Berhasil", "Jurnal harian disimpan.");
+                document.getElementById('journal-form').reset();
+            } catch (e) {
+                showAlert("Gagal", "Kesalahan simpan.");
             } finally {
                 btn.disabled = false;
-                document.getElementById('submit-spinner').classList.add('hidden');
+                spinner.classList.add('hidden');
+                txt.textContent = 'Simpan Sekarang';
             }
-        });
+        };
 
         function setupRealtimeListener() {
             if (!firebaseUid) return;
-            const b = document.getElementById('filter-bulan').value;
-            const t = document.getElementById('filter-tahun').value;
-            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('current-period-display').textContent = `(${months[parseInt(b)-1]} ${t})`;
-
-            const q = query(collection(db, `${JOURNAL_PATH}${firebaseUid}/jurnal_harian`), orderBy('timestamp', 'desc'));
+            const q = query(collection(db, `${JOURNAL_PATH_BASE}${firebaseUid}/jurnal_harian`), orderBy('timestamp', 'desc'));
             onSnapshot(q, (snap) => {
                 const arr = [];
                 snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
                 journalDataCache = arr;
-                const filtered = arr.filter(e => e.tanggal.startsWith(`${t}-${b}`));
-                render(filtered);
+                updateStats();
+                renderHistory();
+                renderRecentDashboard();
             });
         }
 
-        function render(entries) {
-            journalEntriesBody.innerHTML = entries.length ? '' : '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500 text-sm">Data kosong.</td></tr>';
-            entries.forEach(e => {
-                const tr = document.createElement('tr');
-                const jam = (e.jamMulai && e.jamSelesai) ? ` (${e.jamMulai}-${e.jamSelesai})` : '';
-                
-                let detail = '';
-                if (e.kegiatan === 'Mengajar') {
-                    detail = `<b>${e.kelasDiajar}</b>${jam}<br><small class="text-gray-500">${e.materiDiajar}</small>`;
-                } else if (e.kegiatan === 'Piket') {
-                    detail = `${e.kegiatan} - <b>${e.lantai || ''}</b>${jam}`;
-                } else if (e.kegiatan === 'Lainnya') {
-                    detail = `<b>${e.namaKegiatanLainnya || 'Kegiatan Lainnya'}</b>`;
-                } else {
-                    detail = `${e.kegiatan}${jam}`;
-                }
-                
-                tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-900">${e.tanggal}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-xs"><span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-full font-bold">${e.kegiatan}</span></td>
-                    <td class="px-6 py-4 text-xs text-gray-600">${detail}</td>
-                    <td class="px-6 py-4 text-right text-xs"><button onclick="deleteJurnal('${e.id}')" class="text-red-500 hover:underline">Hapus</button></td>
-                `;
-                journalEntriesBody.appendChild(tr);
-            });
+        function updateStats() {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const curMonth = String(now.getMonth() + 1).padStart(2, '0');
+            const curYear = now.getFullYear();
+
+            const todayCount = journalDataCache.filter(e => e.tanggal === todayStr).length;
+            const monthCount = journalDataCache.filter(e => e.tanggal.startsWith(`${curYear}-${curMonth}`)).length;
+
+            const elToday = document.getElementById('stat-count-today');
+            const elMonth = document.getElementById('stat-count-month');
+            if(elToday) elToday.textContent = todayCount;
+            if(elMonth) elMonth.textContent = monthCount;
         }
 
-        window.deleteJurnal = async (id) => {
-            if (confirm("Hapus entri ini?")) {
-                await deleteDoc(doc(db, `${JOURNAL_PATH}${firebaseUid}/jurnal_harian`, id));
+        function renderRecentDashboard() {
+            const list = document.getElementById('home-recent-list');
+            if(!list) return;
+            const recents = journalDataCache.slice(0, 3);
+            if (recents.length === 0) {
+                list.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">Belum ada jurnal.</p>`;
+                return;
             }
+            list.innerHTML = '';
+            recents.forEach(e => {
+                const div = document.createElement('div');
+                div.className = "flex items-center space-x-4";
+                const color = e.kegiatan === 'Mengajar' ? 'indigo' : (e.kegiatan === 'Piket' ? 'emerald' : 'orange');
+                div.innerHTML = `
+                    <div class="bg-${color}-50 p-3 rounded-2xl">
+                        <div class="w-3 h-3 rounded-full bg-${color}-500"></div>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800">${e.kegiatan}</h4>
+                        <p class="text-[10px] text-gray-400 font-medium">${e.tanggal}</p>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('journal-list-content');
+            if(!list) return;
+            const b = document.getElementById('filter-bulan').value;
+            const t = document.getElementById('filter-tahun').value;
+            
+            const filtered = journalDataCache.filter(e => e.tanggal.startsWith(`${t}-${b}`));
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="text-center py-20"><p class="text-gray-400 text-sm">Tidak ada data.</p></div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            filtered.forEach(e => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm relative";
+                const color = e.kegiatan === 'Mengajar' ? 'indigo' : (e.kegiatan === 'Piket' ? 'emerald' : 'orange');
+                
+                let detailHtml = '';
+                if(e.kegiatan === 'Mengajar') detailHtml = `<p class="text-xs text-gray-500 mt-2"><b>${e.kelasDiajar}</b> • ${e.materiDiajar}</p>`;
+                else if(e.kegiatan === 'Piket') detailHtml = `<p class="text-xs text-gray-500 mt-2"><b>${e.lantai}</b></p>`;
+                else if(e.kegiatan === 'Lainnya') detailHtml = `<p class="text-xs text-gray-500 mt-2"><b>${e.namaKegiatanLainnya}</b></p>`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-${color}-500 bg-${color}-50 px-2 py-1 rounded-lg">${e.kegiatan}</span>
+                            <h4 class="text-lg font-bold text-gray-900 mt-2">${e.tanggal}</h4>
+                            ${detailHtml}
+                        </div>
+                        <button onclick="window.confirmDelete('${e.id}')" class="p-2 text-red-400">
+                           Hapus
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        window.confirmDelete = (id) => {
+            window.showConfirm("Hapus Jurnal?", "Tindakan ini tidak dapat dibatalkan.", async () => {
+                await deleteDoc(doc(db, `${JOURNAL_PATH_BASE}${firebaseUid}/jurnal_harian`, id));
+            });
         };
 
-        function getExportData() {
+        document.getElementById('export-html-button').onclick = () => {
             const b = document.getElementById('bulan-export').value;
             const t = document.getElementById('tahun-export').value;
-            return journalDataCache.filter(e => e.tanggal.startsWith(`${t}-${b}`)).sort((a,b) => a.tanggal.localeCompare(b.tanggal));
-        }
-
-        document.getElementById('export-text-button').addEventListener('click', () => {
-            const data = getExportData();
-            if (!data.length) return showModal("Info", "Data tidak ditemukan.");
-            let txt = `REKAP JURNAL - ${sheetGuruName}\n\n`;
-            data.forEach((e,i) => {
-                let detail = e.kegiatan;
-                if(e.kegiatan === 'Mengajar') detail = `${e.kelasDiajar} (${e.materiDiajar})`;
-                else if(e.kegiatan === 'Piket') detail = `Piket ${e.lantai}`;
-                else if(e.kegiatan === 'Lainnya') detail = e.namaKegiatanLainnya;
-                
-                txt += `${i+1}. [${e.tanggal}] ${detail}\n`;
-            });
-            const blob = new Blob([txt], {type: 'text/plain'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `Jurnal_${sheetGuruName}.txt`;
-            a.click();
-        });
-
-        document.getElementById('export-html-button').addEventListener('click', () => {
-            const data = getExportData();
-            if (!data.length) return showModal("Info", "Data tidak ditemukan.");
-            let html = `<html><body style="font-family:Arial;padding:20px;"><h2 style="text-align:center">LAPORAN JURNAL GURU</h2><p>Nama: ${sheetGuruName}</p><table border="1" style="width:100%;border-collapse:collapse"><thead><tr style="background:#eee"><th>No</th><th>Tanggal</th><th>Jam</th><th>Kegiatan/Detail</th></tr></thead><tbody>`;
-            data.forEach((e,i) => {
-                let detail = e.kegiatan;
-                if (e.kegiatan === 'Mengajar') detail = `${e.kelasDiajar} - ${e.materiDiajar}`;
-                else if (e.kegiatan === 'Piket') detail = `Piket ${e.lantai}`;
-                else if (e.kegiatan === 'Lainnya') detail = e.namaKegiatanLainnya;
-                
-                html += `<tr><td>${i+1}</td><td>${e.tanggal}</td><td>${e.jamMulai}-${e.jamSelesai}</td><td>${detail}</td></tr>`;
-            });
+            const data = journalDataCache.filter(e => e.tanggal.startsWith(`${t}-${b}`));
+            if (!data.length) return showAlert("Info", "Data kosong.");
+            
+            let html = `<html><body><h2>LAPORAN JURNAL - ${currentUserName}</h2><table border="1"><thead><tr><th>Tanggal</th><th>Kegiatan</th></tr></thead><tbody>`;
+            data.forEach(e => html += `<tr><td>${e.tanggal}</td><td>${e.kegiatan}</td></tr>`);
             html += `</tbody></table></body></html>`;
             const blob = new Blob([html], {type: 'text/html'});
             const a = document.createElement('a');
-            a.href = url; a.download = `Laporan_Jurnal.html`;
+            a.href = URL.createObjectURL(blob); a.download = `Jurnal_${b}_${t}.html`;
             a.click();
-        });
+        };
 
-        document.getElementById('filter-bulan').addEventListener('change', setupRealtimeListener);
-        document.getElementById('filter-tahun').addEventListener('change', setupRealtimeListener);
-        document.getElementById('modal-close-button').addEventListener('click', hideModal);
+        document.getElementById('filter-bulan').onchange = setupRealtimeListener;
+        document.getElementById('filter-tahun').onchange = setupRealtimeListener;
 
-        init();
+        start();
     </script>
 
-    <!-- PWA LOGIC -->
+    <!-- PWA -->
     <script>
-        const m = {
+        const manifest = {
             "name": "Jurnal Guru Shidqia",
             "short_name": "Jurnal Guru",
             "start_url": ".",
             "display": "standalone",
             "background_color": "#ffffff",
             "theme_color": "#4f46e5",
-            "icons": [{"src": "https://placehold.co/192x192/4f46e5/ffffff?text=JG", "sizes": "192x192", "type": "image/png"}]
+            "icons": [{"src": "https://placehold.co/512x512/4f46e5/ffffff?text=JG", "sizes": "512x512", "type": "image/png"}]
         };
-        const blob = new Blob([JSON.stringify(m)], {type: 'application/json'});
-        const manifestLink = document.getElementById('pwa-manifest-link');
-        if (manifestLink) manifestLink.setAttribute('href', URL.createObjectURL(blob));
+        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+        document.getElementById('pwa-manifest-link').setAttribute('href', URL.createObjectURL(blob));
 
         let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installBanner.classList.remove('hidden');
+            document.getElementById('install-banner').classList.remove('hidden');
         });
 
-        installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            installBanner.classList.add('hidden');
-        });
-
-        window.addEventListener('appinstalled', () => {
-            installBanner.classList.add('hidden');
-        });
+        document.getElementById('install-button').onclick = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt = null;
+                document.getElementById('install-banner').classList.add('hidden');
+            }
+        };
     </script>
 </body>
 </html>
