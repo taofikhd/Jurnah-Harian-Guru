@@ -58,8 +58,11 @@
                 </button>
             </div>
 
-            <div id="auth-info" class="text-sm mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+            <div id="auth-info" class="text-sm mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200 flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
                 <span id="user-status" class="font-medium text-indigo-800">Menunggu verifikasi ID Guru...</span>
+                <button id="logout-button" class="hidden text-red-600 hover:text-white hover:bg-red-600 border border-red-600 px-4 py-1.5 rounded-lg font-bold transition duration-150 text-xs">
+                    Logout
+                </button>
             </div>
         </header>
         
@@ -72,6 +75,15 @@
                     <label for="id-guru-input" class="block text-sm font-medium text-gray-700 mb-1">ID Guru</label>
                     <input type="text" id="id-guru-input" placeholder="Contoh: 840405" required class="form-input text-center text-xl tracking-widest" maxlength="6" pattern="\d{6}">
                 </div>
+
+                <!-- Riwayat ID -->
+                <div id="login-history-container" class="hidden">
+                    <p class="text-xs text-gray-500 mb-2">ID Terakhir digunakan:</p>
+                    <div id="login-history-list" class="flex flex-wrap gap-2">
+                        <!-- Riwayat akan muncul di sini -->
+                    </div>
+                </div>
+
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-lg flex items-center justify-center" id="login-button">
                     <svg id="login-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -158,8 +170,8 @@
                             <input type="text" id="materi" placeholder="Contoh: Operasi Hitung" class="form-input">
                         </div>
                         <div class="md:col-span-1">
-                            <label for="kehadiran" class="block text-sm font-medium text-gray-700 mb-1">Kehadiran</label>
-                            <input type="text" id="kehadiran" placeholder="isikan nama siswa tidak hadir" class="form-input">
+                            <label for="kehadiran" class="block text-sm font-medium text-gray-700 mb-1">Ket. Kehadiran</label>
+                            <input type="text" id="kehadiran" placeholder="Sakit/Izin/Alfa" class="form-input">
                         </div>
                     </div>
 
@@ -329,6 +341,10 @@
         const piketFields = document.getElementById('piket-fields');
         const otherFields = document.getElementById('other-fields');
         const jamPelajaranField = document.getElementById('jam-pelajaran-field');
+        const logoutButton = document.getElementById('logout-button');
+        const idGuruInput = document.getElementById('id-guru-input');
+        const loginHistoryContainer = document.getElementById('login-history-container');
+        const loginHistoryList = document.getElementById('login-history-list');
 
         function showModal(title, message) {
             document.getElementById('modal-title').textContent = title;
@@ -354,10 +370,20 @@
             } catch (e) { console.warn("Webhook failed"); }
         }
 
+        function showLoginScreen() {
+            toggleLoading(false);
+            loginContainer.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+            logoutButton.classList.add('hidden');
+            userStatusSpan.textContent = "Silakan login untuk mengakses jurnal.";
+            displayLoginHistory();
+        }
+
         function showMainApp() {
             toggleLoading(false);
             loginContainer.classList.add('hidden');
             appContainer.classList.remove('hidden');
+            logoutButton.classList.remove('hidden');
             userStatusSpan.innerHTML = `Login: <b>${sheetGuruName}</b>`;
             
             const now = new Date();
@@ -370,6 +396,33 @@
             document.getElementById('tahun-export').value = curTahun;
 
             setupRealtimeListener();
+        }
+
+        function displayLoginHistory() {
+            const history = JSON.parse(localStorage.getItem('jurnalGuruHistory') || '[]');
+            if (history.length > 0) {
+                loginHistoryContainer.classList.remove('hidden');
+                loginHistoryList.innerHTML = '';
+                history.forEach(id => {
+                    const badge = document.createElement('button');
+                    badge.className = "bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-200 text-xs font-bold hover:bg-indigo-100 transition";
+                    badge.textContent = id;
+                    badge.type = "button";
+                    badge.onclick = () => { idGuruInput.value = id; };
+                    loginHistoryList.appendChild(badge);
+                });
+            } else {
+                loginHistoryContainer.classList.add('hidden');
+            }
+        }
+
+        function saveToHistory(id) {
+            let history = JSON.parse(localStorage.getItem('jurnalGuruHistory') || '[]');
+            if (!history.includes(id)) {
+                history.unshift(id); // Tambah ke awal
+                history = history.slice(0, 5); // Simpan maksimal 5 riwayat
+                localStorage.setItem('jurnalGuruHistory', JSON.stringify(history));
+            }
         }
 
         async function init() {
@@ -389,12 +442,19 @@
                         sheetGuruMataPelajaran = MANUAL_SUBJECT_MAP[storedId];
                         showMainApp();
                     } else {
-                        toggleLoading(false);
-                        loginContainer.classList.remove('hidden');
+                        showLoginScreen();
                     }
                 }
             });
         }
+
+        logoutButton.addEventListener('click', () => {
+            if (confirm("Apakah Anda yakin ingin logout?")) {
+                localStorage.removeItem('jurnalGuruId');
+                localStorage.removeItem('jurnalGuruName');
+                showLoginScreen();
+            }
+        });
 
         kegiatanSelect.addEventListener('change', () => {
             const v = kegiatanSelect.value;
@@ -406,7 +466,7 @@
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = document.getElementById('id-guru-input').value;
+            const id = idGuruInput.value;
             const err = document.getElementById('login-error');
             const btn = document.getElementById('login-button');
             
@@ -423,6 +483,7 @@
                     sheetGuruMataPelajaran = MANUAL_SUBJECT_MAP[id] || "Umum";
                     localStorage.setItem('jurnalGuruId', sheetIdGuru);
                     localStorage.setItem('jurnalGuruName', sheetGuruName);
+                    saveToHistory(id);
                     showMainApp();
                 } else {
                     err.textContent = "ID tidak terdaftar.";
@@ -472,7 +533,6 @@
                 otherFields.classList.add('hidden');
                 jamPelajaranField.classList.add('hidden');
                 
-                // Siapkan data mapping untuk Google Sheets
                 const sheetData = {
                     Tanggal: data.tanggal,
                     Kegiatan: keg,
@@ -594,7 +654,6 @@
 
     <!-- PWA LOGIC -->
     <script>
-        // Manifest data
         const m = {
             "name": "Jurnal Guru Shidqia",
             "short_name": "Jurnal Guru",
@@ -608,37 +667,26 @@
         const manifestLink = document.getElementById('pwa-manifest-link');
         if (manifestLink) manifestLink.setAttribute('href', URL.createObjectURL(blob));
 
-        // Logic Instalasi Mencolok
         let deferredPrompt;
         const installBanner = document.getElementById('install-banner');
         const installButton = document.getElementById('install-button');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Mencegah Chrome memunculkan mini-infobar otomatis (Android)
             e.preventDefault();
-            // Simpan event agar bisa dipicu nanti
             deferredPrompt = e;
-            // Tampilkan banner instalasi buatan kita sendiri yang mencolok
             installBanner.classList.remove('hidden');
         });
 
         installButton.addEventListener('click', async () => {
             if (!deferredPrompt) return;
-            // Tampilkan prompt instalasi asli browser
             deferredPrompt.prompt();
-            // Tunggu jawaban pengguna
             const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to install: ${outcome}`);
-            // Reset prompt karena hanya bisa digunakan sekali
             deferredPrompt = null;
-            // Sembunyikan banner
             installBanner.classList.add('hidden');
         });
 
         window.addEventListener('appinstalled', () => {
-            // Sembunyikan banner jika aplikasi sudah berhasil diinstal
             installBanner.classList.add('hidden');
-            console.log('PWA was installed');
         });
     </script>
 </body>
