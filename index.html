@@ -50,9 +50,9 @@
         </header>
         
         <!-- === SECTION LOGIN === -->
-        <section id="login-container" class="bg-white p-6 shadow-xl rounded-xl max-w-sm mx-auto my-16 hidden">
+        <section id="login-container" class="bg-white p-6 shadow-xl rounded-xl max-sm:max-w-xs mx-auto my-16 hidden">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Login Guru</h2>
-            <p class="text-gray-600 mb-6 text-center text-sm">Masukkan 6 digit ID Guru Anda untuk mengakses sistem jurnal.</p>
+            <p class="text-gray-600 mb-6 text-center text-sm">Masukkan 6 digit ID Guru Anda.</p>
             <form id="login-form" class="space-y-4">
                 <div>
                     <label for="id-guru-input" class="block text-sm font-medium text-gray-700 mb-1">ID Guru</label>
@@ -63,7 +63,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span id="login-text">Masuk ke Sistem</span>
+                    <span id="login-text">Masuk</span>
                 </button>
                 <div id="login-error" class="text-red-500 text-sm mt-2 text-center hidden font-medium"></div>
             </form>
@@ -138,40 +138,38 @@
                             </select>
                         </div>
                         <div class="md:col-span-1">
-                            <label for="materi" class="block text-sm font-medium text-gray-700 mb-1">Tujuan / Materi Pembelajaran</label>
+                            <label for="materi" class="block text-sm font-medium text-gray-700 mb-1">Materi Pembelajaran</label>
                             <input type="text" id="materi" placeholder="Contoh: Operasi Hitung" class="form-input">
                         </div>
                         <div class="md:col-span-1">
-                            <label for="kehadiran" class="block text-sm font-medium text-gray-700 mb-1">Kehadiran (Sakit/Izin/Alfa)</label>
-                            <textarea id="kehadiran" rows="2" placeholder="Contoh: Budi (S), Sinta (I)" class="form-input"></textarea>
+                            <label for="kehadiran" class="block text-sm font-medium text-gray-700 mb-1">Ket. Kehadiran</label>
+                            <input type="text" id="kehadiran" placeholder="Sakit/Izin/Alfa" class="form-input">
                         </div>
                     </div>
                     
-                    <div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-lg flex items-center justify-center" id="submit-button">
-                            <svg id="submit-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span id="submit-text">Simpan Jurnal</span>
-                        </button>
-                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-lg flex items-center justify-center" id="submit-button">
+                        <svg id="submit-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="submit-text">Simpan Jurnal</span>
+                    </button>
                 </form>
             </section>
             
             <!-- Ekspor Rekap Bulanan -->
             <section class="bg-white p-6 shadow-xl rounded-xl">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Ekspor Rekap Jurnal Bulanan</h2>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Ekspor Rekap Jurnal</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div class="md:col-span-1">
                         <label for="bulan-export" class="block text-sm font-medium text-gray-700 mb-1">Pilih Bulan</label>
                         <select id="bulan-export" required class="form-select">
-                            <option value="01">01 - Januari</option><option value="02">02 - Februari</option>
-                            <option value="03">03 - Maret</option><option value="04">04 - April</option>
-                            <option value="05">05 - Mei</option><option value="06">06 - Juni</option>
-                            <option value="07">07 - Juli</option><option value="08">08 - Agustus</option>
-                            <option value="09">09 - September</option><option value="10">10 - Oktober</option>
-                            <option value="11">11 - November</option><option value="12">12 - Desember</option>
+                            <option value="01">Januari</option><option value="02">Februari</option>
+                            <option value="03">Maret</option><option value="04">April</option>
+                            <option value="05">Mei</option><option value="06">Juni</option>
+                            <option value="07">Juli</option><option value="08">Agustus</option>
+                            <option value="09">September</option><option value="10">Oktober</option>
+                            <option value="11">November</option><option value="12">Desember</option>
                         </select>
                     </div>
                     <div class="md:col-span-1">
@@ -180,7 +178,7 @@
                     </div>
                      <div class="md:col-span-1">
                          <button id="export-html-button" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md text-sm">
-                            Ekspor HTML (untuk Word)
+                            Ekspor HTML (Word)
                         </button>
                     </div>
                     <div class="md:col-span-1">
@@ -193,11 +191,11 @@
             
             <!-- Daftar Jurnal Harian -->
             <section class="bg-white p-6 shadow-xl rounded-xl">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Jurnal Harian Anda <span id="current-period-display" class="text-xl font-bold text-indigo-700"></span></h2>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Riwayat Jurnal <span id="current-period-display" class="text-indigo-700"></span></h2>
                 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end mb-6">
                     <div>
-                        <label for="filter-bulan" class="block text-sm font-medium text-gray-700 mb-1">Tampilkan Bulan</label>
+                        <label for="filter-bulan" class="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                         <select id="filter-bulan" class="form-select">
                             <option value="01">Januari</option><option value="02">Februari</option>
                             <option value="03">Maret</option><option value="04">April</option>
@@ -225,7 +223,7 @@
                         </thead>
                         <tbody id="journal-entries" class="bg-white divide-y divide-gray-200">
                             <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">Memuat data jurnal...</td>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">Memuat data...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -234,28 +232,36 @@
         </main>
     </div>
 
-    <!-- Modal Alert Custom -->
+    <!-- Modal Alert -->
     <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full transform transition-all duration-300 scale-95">
             <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-3">Pesan</h3>
             <p id="modal-message" class="text-gray-600 mb-6"></p>
-            <button id="modal-close-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition duration-150">Tutup</button>
+            <button id="modal-close-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg">Tutup</button>
         </div>
     </div>
     
-    <!-- Firebase SDK & App Logic -->
+    <!-- Firebase SDK & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, addDoc, onSnapshot, collection, query, where, deleteDoc, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- KONFIGURASI WEBHOOK GOOGLE SHEETS ---
+        // Konfigurasi Webhook Google Sheets Anda
         const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGPe_5m6kxaCrmFR2ib6YyNjwBzEgWxoXYKnLPiGFIahW_D9BWPQUsF0aDZwPZfyE1/exec'; 
 
-        // --- GLOBAL VARIABLES ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
+        // Konfigurasi Firebase dari akun Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrNuO3WIgBiyHZDE3_7YeZFb6382Psmqg",
+            authDomain: "jurnal-harian-guru-1b4cd.firebaseapp.com",
+            projectId: "jurnal-harian-guru-1b4cd",
+            storageBucket: "jurnal-harian-guru-1b4cd.firebasestorage.app",
+            messagingSenderId: "944268886074",
+            appId: "1:944268886074:web:c9ba2e81524464754a7503",
+            measurementId: "G-TVKVZBYEZQ"
+        };
+
+        const appId = 'jurnal-guru-shidqia'; // ID aplikasi untuk path Firestore
 
         let app, db, auth, firebaseUid = null; 
         let sheetIdGuru = null, sheetGuruName = null, sheetGuruMataPelajaran = null;
@@ -271,9 +277,9 @@
             '525669': 'Seni Budaya', '348198': 'PJOK', '231698': 'PJOK', '911981': 'Bahasa Arab', '823347': 'BK'
         };
 
-        const JOURNAL_COLLECTION_PATH_BASE = `/artifacts/${appId}/users/`; 
+        const JOURNAL_PATH = `/artifacts/${appId}/users/`; 
 
-        // DOM Elements
+        // Elements
         const loadingOverlay = document.getElementById('loading-overlay');
         const appContainer = document.getElementById('app-container');
         const loginContainer = document.getElementById('login-container');
@@ -283,53 +289,57 @@
         const kegiatanSelect = document.getElementById('kegiatan');
         const teachingFields = document.getElementById('teaching-fields');
         const jamPelajaranField = document.getElementById('jam-pelajaran-field');
-        const modal = document.getElementById('custom-modal');
 
-        // --- UTILS ---
         function showModal(title, message) {
             document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-message').textContent = message;
-            modal.classList.remove('hidden');
+            document.getElementById('custom-modal').classList.remove('hidden');
         }
 
-        function hideModal() { modal.classList.add('hidden'); }
+        function hideModal() { document.getElementById('custom-modal').classList.add('hidden'); }
         function toggleLoading(isLoading) { isLoading ? loadingOverlay.classList.remove('hidden') : loadingOverlay.classList.add('hidden'); }
 
-        async function sendToGoogleSheet(journalData) {
+        async function sendToGoogleSheet(data) {
             try {
-                await fetch(GOOGLE_SHEET_WEBHOOK_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(journalData) });
+                await fetch(GOOGLE_SHEET_WEBHOOK_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({
+                        ...data,
+                        'Nama Guru': sheetGuruName,
+                        'ID Guru': sheetIdGuru,
+                        'Waktu Simpan': new Date().toLocaleString('id-ID')
+                    }) 
+                });
             } catch (e) { console.warn("Webhook failed"); }
         }
 
-        // --- AUTH ---
         function showMainApp() {
             toggleLoading(false);
             loginContainer.classList.add('hidden');
             appContainer.classList.remove('hidden');
-            userStatusSpan.innerHTML = `Login sebagai: <b>${sheetGuruName}</b> (${sheetGuruMataPelajaran})`;
+            userStatusSpan.innerHTML = `Login: <b>${sheetGuruName}</b>`;
             
             const now = new Date();
-            const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
-            const currentYear = now.getFullYear();
+            const curBulan = String(now.getMonth() + 1).padStart(2, '0');
+            const curTahun = now.getFullYear();
 
-            document.getElementById('filter-bulan').value = currentMonth;
-            document.getElementById('filter-tahun').value = currentYear;
-            document.getElementById('bulan-export').value = currentMonth;
-            document.getElementById('tahun-export').value = currentYear;
+            document.getElementById('filter-bulan').value = curBulan;
+            document.getElementById('filter-tahun').value = curTahun;
+            document.getElementById('bulan-export').value = curBulan;
+            document.getElementById('tahun-export').value = curTahun;
 
             setupRealtimeListener();
         }
 
-        async function initializeFirebase() {
-            if (!firebaseConfig) return;
+        async function init() {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
             
             onAuthStateChanged(auth, async (user) => {
                 if (!user) {
-                    if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
-                    else await signInAnonymously(auth);
+                    await signInAnonymously(auth);
                 } else {
                     firebaseUid = user.uid;
                     const storedId = localStorage.getItem('jurnalGuruId');
@@ -346,42 +356,39 @@
             });
         }
 
-        // --- FORM LOGIC ---
         kegiatanSelect.addEventListener('change', () => {
-            const val = kegiatanSelect.value;
-            teachingFields.classList.toggle('hidden', val !== 'Mengajar');
-            jamPelajaranField.classList.toggle('hidden', val !== 'Mengajar' && val !== 'Piket');
+            const v = kegiatanSelect.value;
+            teachingFields.classList.toggle('hidden', v !== 'Mengajar');
+            jamPelajaranField.classList.toggle('hidden', v !== 'Mengajar' && v !== 'Piket');
         });
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('id-guru-input').value;
-            const errorDiv = document.getElementById('login-error');
-            
-            errorDiv.classList.add('hidden');
+            const err = document.getElementById('login-error');
             const btn = document.getElementById('login-button');
+            
+            err.classList.add('hidden');
             btn.disabled = true;
             document.getElementById('login-spinner').classList.remove('hidden');
 
             try {
-                const response = await fetch(`${GOOGLE_SHEET_WEBHOOK_URL}?id=${id}`);
-                const result = await response.json();
-                
-                if (result.verified) {
-                    sheetIdGuru = result.id;
-                    sheetGuruName = result.name;
+                const res = await fetch(`${GOOGLE_SHEET_WEBHOOK_URL}?id=${id}`);
+                const data = await res.json();
+                if (data.verified) {
+                    sheetIdGuru = data.id;
+                    sheetGuruName = data.name;
                     sheetGuruMataPelajaran = MANUAL_SUBJECT_MAP[id] || "Umum";
-                    
                     localStorage.setItem('jurnalGuruId', sheetIdGuru);
                     localStorage.setItem('jurnalGuruName', sheetGuruName);
                     showMainApp();
                 } else {
-                    errorDiv.textContent = "ID Guru tidak terdaftar.";
-                    errorDiv.classList.remove('hidden');
+                    err.textContent = "ID tidak terdaftar.";
+                    err.classList.remove('hidden');
                 }
-            } catch (err) {
-                errorDiv.textContent = "Koneksi gagal.";
-                errorDiv.classList.remove('hidden');
+            } catch {
+                err.textContent = "Gagal verifikasi.";
+                err.classList.remove('hidden');
             } finally {
                 btn.disabled = false;
                 document.getElementById('login-spinner').classList.add('hidden');
@@ -390,142 +397,125 @@
 
         journalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const submitBtn = document.getElementById('submit-button');
-            submitBtn.disabled = true;
+            const btn = document.getElementById('submit-button');
+            btn.disabled = true;
             document.getElementById('submit-spinner').classList.remove('hidden');
 
             try {
-                const kegiatan = kegiatanSelect.value;
+                const keg = kegiatanSelect.value;
                 const data = {
                     tanggal: document.getElementById('tanggal').value,
-                    kegiatan: kegiatan,
-                    sheetIdGuru: sheetIdGuru,
-                    timestamp: Timestamp.now(),
+                    kegiatan: keg,
                     jamMulai: document.getElementById('jam-mulai').value || null,
-                    jamSelesai: document.getElementById('jam-selesai').value || null
+                    jamSelesai: document.getElementById('jam-selesai').value || null,
+                    sheetIdGuru: sheetIdGuru,
+                    timestamp: Timestamp.now()
                 };
 
-                if (kegiatan === 'Mengajar') {
+                if (keg === 'Mengajar') {
                     data.kelasDiajar = document.getElementById('kelas').value;
                     data.materiDiajar = document.getElementById('materi').value;
                     data.kehadiranPesertaDidik = document.getElementById('kehadiran').value;
                 }
 
-                await addDoc(collection(db, `${JOURNAL_COLLECTION_PATH_BASE}${firebaseUid}/jurnal_harian`), data);
-                showModal("Berhasil", "Jurnal telah disimpan.");
+                await addDoc(collection(db, `${JOURNAL_PATH}${firebaseUid}/jurnal_harian`), data);
+                showModal("Berhasil", "Jurnal tersimpan.");
                 journalForm.reset();
                 teachingFields.classList.add('hidden');
                 jamPelajaranField.classList.add('hidden');
-                
-                sendToGoogleSheet({...data, 'Nama Guru': sheetGuruName, 'Mata Pelajaran': sheetGuruMataPelajaran});
-            } catch (err) {
-                showModal("Gagal", "Terjadi kesalahan saat menyimpan.");
+                sendToGoogleSheet(data);
+            } catch {
+                showModal("Gagal", "Kesalahan penyimpanan.");
             } finally {
-                submitBtn.disabled = false;
+                btn.disabled = false;
                 document.getElementById('submit-spinner').classList.add('hidden');
             }
         });
 
-        // --- REALTIME LISTENER ---
         function setupRealtimeListener() {
             if (!firebaseUid) return;
-            const selBulan = document.getElementById('filter-bulan').value;
-            const selTahun = document.getElementById('filter-tahun').value;
-            
-            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('current-period-display').textContent = `(${monthNames[parseInt(selBulan)-1]} ${selTahun})`;
+            const b = document.getElementById('filter-bulan').value;
+            const t = document.getElementById('filter-tahun').value;
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('current-period-display').textContent = `(${months[parseInt(b)-1]} ${t})`;
 
-            const q = query(collection(db, `${JOURNAL_COLLECTION_PATH_BASE}${firebaseUid}/jurnal_harian`), orderBy('timestamp', 'desc'));
-            
-            onSnapshot(q, (snapshot) => {
-                const entries = [];
-                snapshot.forEach(doc => entries.push({ id: doc.id, ...doc.data() }));
-                journalDataCache = entries;
-                
-                const filtered = entries.filter(e => e.tanggal.startsWith(`${selTahun}-${selBulan}`));
-                renderEntries(filtered);
+            const q = query(collection(db, `${JOURNAL_PATH}${firebaseUid}/jurnal_harian`), orderBy('timestamp', 'desc'));
+            onSnapshot(q, (snap) => {
+                const arr = [];
+                snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                journalDataCache = arr;
+                const filtered = arr.filter(e => e.tanggal.startsWith(`${t}-${b}`));
+                render(filtered);
             });
         }
 
-        function renderEntries(entries) {
-            journalEntriesBody.innerHTML = entries.length ? '' : '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Tidak ada data di bulan ini.</td></tr>';
+        function render(entries) {
+            journalEntriesBody.innerHTML = entries.length ? '' : '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500 text-sm">Data kosong.</td></tr>';
             entries.forEach(e => {
-                const row = document.createElement('tr');
-                row.className = "hover:bg-gray-50";
-                const jam = (e.jamMulai && e.jamSelesai) ? ` (Jam ${e.jamMulai}-${e.jamSelesai})` : '';
-                const detail = e.kegiatan === 'Mengajar' ? `<b>${e.kelasDiajar}</b>${jam}<br><small>${e.materiDiajar}</small>` : `${e.kegiatan}${jam}`;
-                
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${e.tanggal}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-xs"><span class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full font-bold">${e.kegiatan}</span></td>
-                    <td class="px-6 py-4 text-sm text-gray-600">${detail}</td>
-                    <td class="px-6 py-4 text-right"><button onclick="deleteEntry('${e.id}')" class="text-red-500 font-bold">Hapus</button></td>
+                const tr = document.createElement('tr');
+                const jam = (e.jamMulai && e.jamSelesai) ? ` (${e.jamMulai}-${e.jamSelesai})` : '';
+                const detail = e.kegiatan === 'Mengajar' ? `<b>${e.kelasDiajar}</b>${jam}<br><small class="text-gray-500">${e.materiDiajar}</small>` : `${e.kegiatan}${jam}`;
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-900">${e.tanggal}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-xs"><span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-full font-bold">${e.kegiatan}</span></td>
+                    <td class="px-6 py-4 text-xs text-gray-600">${detail}</td>
+                    <td class="px-6 py-4 text-right text-xs"><button onclick="deleteJurnal('${e.id}')" class="text-red-500 hover:underline">Hapus</button></td>
                 `;
-                journalEntriesBody.appendChild(row);
+                journalEntriesBody.appendChild(tr);
             });
         }
 
-        window.deleteEntry = async (id) => {
-            if (confirm("Hapus jurnal ini?")) {
-                await deleteDoc(doc(db, `${JOURNAL_COLLECTION_PATH_BASE}${firebaseUid}/jurnal_harian`, id));
+        window.deleteJurnal = async (id) => {
+            if (confirm("Hapus entri ini?")) {
+                await deleteDoc(doc(db, `${JOURNAL_PATH}${firebaseUid}/jurnal_harian`, id));
             }
         };
 
-        // --- EXPORT ---
-        function getFilteredData() {
+        function getExportData() {
             const b = document.getElementById('bulan-export').value;
             const t = document.getElementById('tahun-export').value;
             return journalDataCache.filter(e => e.tanggal.startsWith(`${t}-${b}`)).sort((a,b) => a.tanggal.localeCompare(b.tanggal));
         }
 
         document.getElementById('export-text-button').addEventListener('click', () => {
-            const data = getFilteredData();
-            if (!data.length) return showModal("Kosong", "Tidak ada data untuk bulan tersebut.");
-            let txt = `REKAP JURNAL - ${sheetGuruName}\nPeriode: ${document.getElementById('bulan-export').value}/${document.getElementById('tahun-export').value}\n\n`;
+            const data = getExportData();
+            if (!data.length) return showModal("Info", "Data tidak ditemukan.");
+            let txt = `REKAP JURNAL - ${sheetGuruName}\n\n`;
             data.forEach((e,i) => {
-                txt += `${i+1}. [${e.tanggal}] ${e.kegiatan}\n`;
-                if(e.kegiatan === 'Mengajar') txt += `   Kelas: ${e.kelasDiajar} | Materi: ${e.materiDiajar}\n`;
+                txt += `${i+1}. [${e.tanggal}] ${e.kegiatan}${e.kegiatan==='Mengajar' ? ' - ' + e.kelasDiajar + ' (' + e.materiDiajar + ')' : ''}\n`;
             });
             const blob = new Blob([txt], {type: 'text/plain'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Jurnal_${sheetIdGuru}.txt`;
-            link.click();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `Jurnal_${sheetGuruName}.txt`;
+            a.click();
         });
 
         document.getElementById('export-html-button').addEventListener('click', () => {
-            const data = getFilteredData();
-            if (!data.length) return showModal("Kosong", "Tidak ada data.");
-            const b = document.getElementById('bulan-export').value;
-            const t = document.getElementById('tahun-export').value;
-            
-            let html = `<html><head><style>table{width:100%;border-collapse:collapse;}th,td{border:1px solid black;padding:8px;font-family:Arial;font-size:10pt;}</style></head><body>`;
-            html += `<h2 style="text-align:center">JURNAL MENGAJAR GURU - ${sheetGuruName}</h2>`;
-            html += `<p>Mata Pelajaran: ${sheetGuruMataPelajaran} | Periode: ${b}/${t}</p>`;
-            html += `<table><thead><tr><th>No</th><th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Materi</th><th>Absen</th></tr></thead><tbody>`;
-            data.filter(e => e.kegiatan === 'Mengajar').forEach((e,i) => {
-                html += `<tr><td>${i+1}</td><td>${e.tanggal}</td><td>${e.jamMulai}-${e.jamSelesai}</td><td>${e.kelasDiajar}</td><td>${e.materiDiajar}</td><td>${e.kehadiranPesertaDidik}</td></tr>`;
+            const data = getExportData();
+            if (!data.length) return showModal("Info", "Data tidak ditemukan.");
+            let html = `<html><body style="font-family:Arial;padding:20px;"><h2 style="text-align:center">LAPORAN JURNAL GURU</h2><p>Nama: ${sheetGuruName}</p><table border="1" style="width:100%;border-collapse:collapse"><thead><tr style="background:#eee"><th>No</th><th>Tanggal</th><th>Jam</th><th>Kegiatan/Materi</th></tr></thead><tbody>`;
+            data.forEach((e,i) => {
+                const detail = e.kegiatan === 'Mengajar' ? `${e.kelasDiajar} - ${e.materiDiajar}` : e.kegiatan;
+                html += `<tr><td>${i+1}</td><td>${e.tanggal}</td><td>${e.jamMulai}-${e.jamSelesai}</td><td>${detail}</td></tr>`;
             });
             html += `</tbody></table></body></html>`;
-            
             const blob = new Blob([html], {type: 'text/html'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Laporan_Jurnal_${b}_${t}.html`;
-            link.click();
+            const a = document.createElement('a');
+            a.href = url; a.download = `Laporan_Jurnal.html`;
+            a.click();
         });
 
-        // Listeners for period filter
         document.getElementById('filter-bulan').addEventListener('change', setupRealtimeListener);
         document.getElementById('filter-tahun').addEventListener('change', setupRealtimeListener);
         document.getElementById('modal-close-button').addEventListener('click', hideModal);
 
-        initializeFirebase();
+        init();
     </script>
 
-    <!-- PWA MANIFEST SCRIPT -->
+    <!-- PWA MANIFEST -->
     <script>
-        const manifest = {
+        const m = {
             "name": "Jurnal Guru Shidqia",
             "short_name": "Jurnal Guru",
             "start_url": ".",
@@ -534,8 +524,9 @@
             "theme_color": "#4f46e5",
             "icons": [{"src": "https://placehold.co/192x192/4f46e5/ffffff?text=JG", "sizes": "192x192", "type": "image/png"}]
         };
-        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        document.getElementById('pwa-manifest-link').setAttribute('href', URL.createObjectURL(blob));
+        const blob = new Blob([JSON.stringify(m)], {type: 'application/json'});
+        const manifestLink = document.getElementById('pwa-manifest-link');
+        if (manifestLink) manifestLink.setAttribute('href', URL.createObjectURL(blob));
     </script>
 </body>
 </html>
