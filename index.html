@@ -41,9 +41,23 @@
     </div>
 
     <div class="max-w-4xl mx-auto">
-        <header class="bg-white shadow-md p-6 rounded-xl mb-8">
+        <header class="bg-white shadow-md p-6 rounded-xl mb-4">
             <h1 class="text-3xl font-extrabold text-indigo-700">Aplikasi Jurnal Harian Guru</h1>
-            <p class="text-gray-600 mt-2">Rekapitulasi Kegiatan Harian Tenaga Pendidik</p>
+            <p class="text-gray-600 mt-2 text-sm md:text-base">Rekapitulasi Kegiatan Harian Tenaga Pendidik</p>
+            
+            <!-- Banner Instalasi (Muncul jika aplikasi bisa diinstal) -->
+            <div id="install-banner" class="mt-4 p-4 bg-indigo-600 rounded-lg text-white flex flex-col md:flex-row items-center justify-between hidden">
+                <div class="flex items-center mb-3 md:mb-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <p class="text-sm font-medium">Instal aplikasi di HP agar lebih mudah diakses!</p>
+                </div>
+                <button id="install-button" class="bg-white text-indigo-600 px-6 py-2 rounded-full font-bold text-sm shadow-md hover:bg-gray-100 transition duration-150">
+                    Instal Sekarang
+                </button>
+            </div>
+
             <div id="auth-info" class="text-sm mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
                 <span id="user-status" class="font-medium text-indigo-800">Menunggu verifikasi ID Guru...</span>
             </div>
@@ -92,6 +106,7 @@
                         </div>
                     </div>
 
+                    <!-- Jam Pelajaran -->
                     <div id="jam-pelajaran-field" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
                          <div class="md:col-span-1">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Jam Ke-</label>
@@ -114,6 +129,7 @@
                         </div>
                     </div>
                     
+                    <!-- Detail Mengajar -->
                     <div id="teaching-fields" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
                         <div>
                             <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas yang Diajar</label>
@@ -144,6 +160,28 @@
                         <div class="md:col-span-1">
                             <label for="kehadiran" class="block text-sm font-medium text-gray-700 mb-1">Ket. Kehadiran</label>
                             <input type="text" id="kehadiran" placeholder="Sakit/Izin/Alfa" class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Detail Piket -->
+                    <div id="piket-fields" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+                        <div>
+                            <label for="lantai" class="block text-sm font-medium text-gray-700 mb-1">Pilih Lantai</label>
+                            <select id="lantai" class="form-select">
+                                <option value="" disabled selected>Pilih Lantai</option>
+                                <option value="Lantai 1">Lantai 1</option>
+                                <option value="Lantai 2">Lantai 2</option>
+                                <option value="Lantai 3">Lantai 3</option>
+                                <option value="Lantai 4">Lantai 4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Detail Lainnya -->
+                    <div id="other-fields" class="grid grid-cols-1 md:grid-cols-1 gap-4 hidden">
+                        <div>
+                            <label for="nama-kegiatan-lainnya" class="block text-sm font-medium text-gray-700 mb-1">Nama Kegiatan</label>
+                            <input type="text" id="nama-kegiatan-lainnya" placeholder="Masukkan nama kegiatan yang dilakukan" class="form-input">
                         </div>
                     </div>
                     
@@ -223,7 +261,7 @@
                         </thead>
                         <tbody id="journal-entries" class="bg-white divide-y divide-gray-200">
                             <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">Memuat data...</td>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500 text-sm">Memuat data...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -247,10 +285,10 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, addDoc, onSnapshot, collection, query, where, deleteDoc, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Konfigurasi Webhook Google Sheets Anda
+        // Konfigurasi Webhook Google Sheets
         const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGPe_5m6kxaCrmFR2ib6YyNjwBzEgWxoXYKnLPiGFIahW_D9BWPQUsF0aDZwPZfyE1/exec'; 
 
-        // Konfigurasi Firebase dari akun Anda
+        // Konfigurasi Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBrNuO3WIgBiyHZDE3_7YeZFb6382Psmqg",
             authDomain: "jurnal-harian-guru-1b4cd.firebaseapp.com",
@@ -261,7 +299,7 @@
             measurementId: "G-TVKVZBYEZQ"
         };
 
-        const appId = 'jurnal-guru-shidqia'; // ID aplikasi untuk path Firestore
+        const appId = 'jurnal-guru-shidqia';
 
         let app, db, auth, firebaseUid = null; 
         let sheetIdGuru = null, sheetGuruName = null, sheetGuruMataPelajaran = null;
@@ -288,6 +326,8 @@
         const journalEntriesBody = document.getElementById('journal-entries');
         const kegiatanSelect = document.getElementById('kegiatan');
         const teachingFields = document.getElementById('teaching-fields');
+        const piketFields = document.getElementById('piket-fields');
+        const otherFields = document.getElementById('other-fields');
         const jamPelajaranField = document.getElementById('jam-pelajaran-field');
 
         function showModal(title, message) {
@@ -359,6 +399,8 @@
         kegiatanSelect.addEventListener('change', () => {
             const v = kegiatanSelect.value;
             teachingFields.classList.toggle('hidden', v !== 'Mengajar');
+            piketFields.classList.toggle('hidden', v !== 'Piket');
+            otherFields.classList.toggle('hidden', v !== 'Lainnya');
             jamPelajaranField.classList.toggle('hidden', v !== 'Mengajar' && v !== 'Piket');
         });
 
@@ -416,14 +458,31 @@
                     data.kelasDiajar = document.getElementById('kelas').value;
                     data.materiDiajar = document.getElementById('materi').value;
                     data.kehadiranPesertaDidik = document.getElementById('kehadiran').value;
+                } else if (keg === 'Piket') {
+                    data.lantai = document.getElementById('lantai').value;
+                } else if (keg === 'Lainnya') {
+                    data.namaKegiatanLainnya = document.getElementById('nama-kegiatan-lainnya').value;
                 }
 
                 await addDoc(collection(db, `${JOURNAL_PATH}${firebaseUid}/jurnal_harian`), data);
                 showModal("Berhasil", "Jurnal tersimpan.");
                 journalForm.reset();
                 teachingFields.classList.add('hidden');
+                piketFields.classList.add('hidden');
+                otherFields.classList.add('hidden');
                 jamPelajaranField.classList.add('hidden');
-                sendToGoogleSheet(data);
+                
+                // Siapkan data mapping untuk Google Sheets
+                const sheetData = {
+                    Tanggal: data.tanggal,
+                    Kegiatan: keg,
+                    'Kelas Diajar': data.kelasDiajar || '',
+                    'Jam Ke': (data.jamMulai && data.jamSelesai) ? `${data.jamMulai}-${data.jamSelesai}` : '',
+                    'Materi Diajar': data.materiDiajar || '',
+                    'Kehadiran Peserta Didik': data.kehadiranPesertaDidik || '',
+                    'Keterangan Lainnya': keg === 'Piket' ? data.lantai : (keg === 'Lainnya' ? data.namaKegiatanLainnya : '')
+                };
+                sendToGoogleSheet(sheetData);
             } catch {
                 showModal("Gagal", "Kesalahan penyimpanan.");
             } finally {
@@ -454,7 +513,18 @@
             entries.forEach(e => {
                 const tr = document.createElement('tr');
                 const jam = (e.jamMulai && e.jamSelesai) ? ` (${e.jamMulai}-${e.jamSelesai})` : '';
-                const detail = e.kegiatan === 'Mengajar' ? `<b>${e.kelasDiajar}</b>${jam}<br><small class="text-gray-500">${e.materiDiajar}</small>` : `${e.kegiatan}${jam}`;
+                
+                let detail = '';
+                if (e.kegiatan === 'Mengajar') {
+                    detail = `<b>${e.kelasDiajar}</b>${jam}<br><small class="text-gray-500">${e.materiDiajar}</small>`;
+                } else if (e.kegiatan === 'Piket') {
+                    detail = `${e.kegiatan} - <b>${e.lantai || ''}</b>${jam}`;
+                } else if (e.kegiatan === 'Lainnya') {
+                    detail = `<b>${e.namaKegiatanLainnya || 'Kegiatan Lainnya'}</b>`;
+                } else {
+                    detail = `${e.kegiatan}${jam}`;
+                }
+                
                 tr.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-900">${e.tanggal}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-xs"><span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-full font-bold">${e.kegiatan}</span></td>
@@ -482,7 +552,12 @@
             if (!data.length) return showModal("Info", "Data tidak ditemukan.");
             let txt = `REKAP JURNAL - ${sheetGuruName}\n\n`;
             data.forEach((e,i) => {
-                txt += `${i+1}. [${e.tanggal}] ${e.kegiatan}${e.kegiatan==='Mengajar' ? ' - ' + e.kelasDiajar + ' (' + e.materiDiajar + ')' : ''}\n`;
+                let detail = e.kegiatan;
+                if(e.kegiatan === 'Mengajar') detail = `${e.kelasDiajar} (${e.materiDiajar})`;
+                else if(e.kegiatan === 'Piket') detail = `Piket ${e.lantai}`;
+                else if(e.kegiatan === 'Lainnya') detail = e.namaKegiatanLainnya;
+                
+                txt += `${i+1}. [${e.tanggal}] ${detail}\n`;
             });
             const blob = new Blob([txt], {type: 'text/plain'});
             const url = URL.createObjectURL(blob);
@@ -494,9 +569,13 @@
         document.getElementById('export-html-button').addEventListener('click', () => {
             const data = getExportData();
             if (!data.length) return showModal("Info", "Data tidak ditemukan.");
-            let html = `<html><body style="font-family:Arial;padding:20px;"><h2 style="text-align:center">LAPORAN JURNAL GURU</h2><p>Nama: ${sheetGuruName}</p><table border="1" style="width:100%;border-collapse:collapse"><thead><tr style="background:#eee"><th>No</th><th>Tanggal</th><th>Jam</th><th>Kegiatan/Materi</th></tr></thead><tbody>`;
+            let html = `<html><body style="font-family:Arial;padding:20px;"><h2 style="text-align:center">LAPORAN JURNAL GURU</h2><p>Nama: ${sheetGuruName}</p><table border="1" style="width:100%;border-collapse:collapse"><thead><tr style="background:#eee"><th>No</th><th>Tanggal</th><th>Jam</th><th>Kegiatan/Detail</th></tr></thead><tbody>`;
             data.forEach((e,i) => {
-                const detail = e.kegiatan === 'Mengajar' ? `${e.kelasDiajar} - ${e.materiDiajar}` : e.kegiatan;
+                let detail = e.kegiatan;
+                if (e.kegiatan === 'Mengajar') detail = `${e.kelasDiajar} - ${e.materiDiajar}`;
+                else if (e.kegiatan === 'Piket') detail = `Piket ${e.lantai}`;
+                else if (e.kegiatan === 'Lainnya') detail = e.namaKegiatanLainnya;
+                
                 html += `<tr><td>${i+1}</td><td>${e.tanggal}</td><td>${e.jamMulai}-${e.jamSelesai}</td><td>${detail}</td></tr>`;
             });
             html += `</tbody></table></body></html>`;
@@ -513,8 +592,9 @@
         init();
     </script>
 
-    <!-- PWA MANIFEST -->
+    <!-- PWA LOGIC -->
     <script>
+        // Manifest data
         const m = {
             "name": "Jurnal Guru Shidqia",
             "short_name": "Jurnal Guru",
@@ -527,6 +607,39 @@
         const blob = new Blob([JSON.stringify(m)], {type: 'application/json'});
         const manifestLink = document.getElementById('pwa-manifest-link');
         if (manifestLink) manifestLink.setAttribute('href', URL.createObjectURL(blob));
+
+        // Logic Instalasi Mencolok
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installButton = document.getElementById('install-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Mencegah Chrome memunculkan mini-infobar otomatis (Android)
+            e.preventDefault();
+            // Simpan event agar bisa dipicu nanti
+            deferredPrompt = e;
+            // Tampilkan banner instalasi buatan kita sendiri yang mencolok
+            installBanner.classList.remove('hidden');
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            // Tampilkan prompt instalasi asli browser
+            deferredPrompt.prompt();
+            // Tunggu jawaban pengguna
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to install: ${outcome}`);
+            // Reset prompt karena hanya bisa digunakan sekali
+            deferredPrompt = null;
+            // Sembunyikan banner
+            installBanner.classList.add('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            // Sembunyikan banner jika aplikasi sudah berhasil diinstal
+            installBanner.classList.add('hidden');
+            console.log('PWA was installed');
+        });
     </script>
 </body>
 </html>
