@@ -61,7 +61,6 @@
     <section id="login-container" class="min-h-screen flex items-center justify-center p-6 bg-white hidden">
         <div class="w-full max-w-sm">
             <div class="text-center mb-10">
-                <!-- Logo Baru dari Quizizz -->
                 <div class="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-4 overflow-hidden shadow-lg border-4 border-indigo-50">
                     <img src="https://quizizz.com/_media/quizzes/a9d2f653-3f07-4f73-9ed8-74aa87668a7d" alt="Logo Shidqia" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200/4f46e5/ffffff?text=SJ'">
                 </div>
@@ -395,7 +394,7 @@
         const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGPe_5m6kxaCrmFR2ib6YyNjwBzEgWxoXYKnLPiGFIahW_D9BWPQUsF0aDZwPZfyE1/exec'; 
         const appIdPrefix = 'jurnal-guru-shidqia';
 
-        let app, db, auth, firebaseUid = null; 
+        let app, db, auth; 
         let currentUserIdGuru = null, currentUserName = null;
         let journalDataCache = [];
 
@@ -408,8 +407,6 @@
             '433811': 'IPS', '496518': 'IPS', '445605': 'IPS', '445167': 'Informatika',
             '525669': 'Seni Budaya', '348198': 'PJOK', '231698': 'PJOK', '911981': 'Bahasa Arab', '823347': 'BK'
         };
-
-        const JOURNAL_PATH_BASE = `/artifacts/${appIdPrefix}/users/`;
 
         // UI Helpers
         window.switchView = (target) => {
@@ -495,7 +492,6 @@
                     if (!user) {
                         await signInAnonymously(auth);
                     } else {
-                        firebaseUid = user.uid;
                         checkSession();
                     }
                 });
@@ -644,7 +640,8 @@
                     data.namaKegiatanLainnya = document.getElementById('nama-kegiatan-lainnya').value;
                 }
 
-                await addDoc(collection(db, `${JOURNAL_PATH_BASE}${firebaseUid}/jurnal_harian`), data);
+                // SIMPAN DATA BERDASARKAN ID GURU AGAR SINKRON ANTAR PERANGKAT
+                await addDoc(collection(db, 'artifacts', appIdPrefix, 'users', currentUserIdGuru, 'jurnal_harian'), data);
                 
                 const sheetData = {
                     Tanggal: data.tanggal,
@@ -674,8 +671,9 @@
         };
 
         function setupRealtimeListener() {
-            if (!firebaseUid) return;
-            const q = query(collection(db, `${JOURNAL_PATH_BASE}${firebaseUid}/jurnal_harian`), orderBy('timestamp', 'desc'));
+            if (!currentUserIdGuru) return;
+            // FETCH DATA BERDASARKAN ID GURU AGAR SINKRON ANTAR PERANGKAT
+            const q = query(collection(db, 'artifacts', appIdPrefix, 'users', currentUserIdGuru, 'jurnal_harian'), orderBy('timestamp', 'desc'));
             onSnapshot(q, (snap) => {
                 const arr = [];
                 snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
@@ -768,7 +766,7 @@
 
         window.confirmDelete = (id) => {
             window.showConfirm("Hapus Jurnal?", "Tindakan ini tidak dapat dibatalkan.", async () => {
-                await deleteDoc(doc(db, `${JOURNAL_PATH_BASE}${firebaseUid}/jurnal_harian`, id));
+                await deleteDoc(doc(db, 'artifacts', appIdPrefix, 'users', currentUserIdGuru, 'jurnal_harian', id));
             });
         };
 
