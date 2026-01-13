@@ -61,6 +61,7 @@
     <section id="login-container" class="min-h-screen flex items-center justify-center p-6 bg-white hidden">
         <div class="w-full max-w-sm">
             <div class="text-center mb-10">
+                <!-- Logo Quizizz Shidqia -->
                 <div class="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-4 overflow-hidden shadow-lg border-4 border-indigo-50">
                     <img src="https://quizizz.com/_media/quizzes/a9d2f653-3f07-4f73-9ed8-74aa87668a7d" alt="Logo Shidqia" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200/4f46e5/ffffff?text=SJ'">
                 </div>
@@ -118,7 +119,7 @@
         <div id="ios-install-tip" class="mx-6 mb-6 bg-amber-50 rounded-3xl p-5 border border-amber-200 flex items-start space-x-4 hidden">
             <div class="bg-amber-100 p-2 rounded-xl text-amber-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2-2v14a2 2 0 002 2z" />
                 </svg>
             </div>
             <div class="flex-1">
@@ -246,28 +247,27 @@
                         </div>
                     </div>
 
-                    <div id="jam-pelajaran-field" class="hidden grid grid-cols-2 gap-4">
-                        <div class="col-span-1">
-                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Mulai Jam</label>
-                            <select id="jam-mulai" class="form-select text-sm">
-                                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                                <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-                                <option value="10">10</option><option value="11">11</option><option value="12">12</option>
-                            </select>
-                        </div>
-                        <div class="col-span-1">
-                            <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Selesai Jam</label>
-                            <select id="jam-selesai" class="form-select text-sm">
-                                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                                <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-                                <option value="10">10</option><option value="11">11</option><option value="12">12</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <div id="teaching-fields" class="hidden space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Mulai Jam</label>
+                                <select id="jam-mulai" class="form-select text-sm">
+                                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                                    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                                    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                                </select>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Selesai Jam</label>
+                                <select id="jam-selesai" class="form-select text-sm">
+                                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                                    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                                    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                                </select>
+                            </div>
+                        </div>
                         <div>
                             <label class="text-xs font-bold text-gray-400 mb-2 block tracking-widest uppercase">Kelas</label>
                             <select id="kelas" class="form-select text-sm">
@@ -351,29 +351,6 @@
         </nav>
     </div>
 
-    <!-- Modal Konfirmasi Kustom -->
-    <div id="custom-modal-confirm" class="fixed inset-0 z-[300] flex items-center justify-center p-6 hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-        <div class="relative bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl text-center">
-            <h3 id="modal-confirm-title" class="text-xl font-extrabold text-gray-900 mb-2">Konfirmasi</h3>
-            <p id="modal-confirm-message" class="text-gray-500 mb-8"></p>
-            <div class="grid grid-cols-2 gap-3">
-                <button id="modal-confirm-no" class="bg-gray-100 text-gray-700 font-bold py-4 rounded-2xl active:scale-95 transition-transform">Batal</button>
-                <button id="modal-confirm-yes" class="bg-red-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-red-100 active:scale-95 transition-transform">Ya, Logout</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Modal Popup Alert -->
-    <div id="custom-modal-alert" class="fixed inset-0 z-[200] flex items-center justify-center p-6 hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-        <div class="relative bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl text-center">
-            <h3 id="modal-alert-title" class="text-xl font-extrabold text-gray-900 mb-2">Pesan</h3>
-            <p id="modal-alert-message" class="text-gray-500 mb-8"></p>
-            <button onclick="closeAlertModal()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg">Selesai</button>
-        </div>
-    </div>
-
     <!-- Firebase SDK Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -392,28 +369,18 @@
         };
 
         const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGPe_5m6kxaCrmFR2ib6YyNjwBzEgWxoXYKnLPiGFIahW_D9BWPQUsF0aDZwPZfyE1/exec'; 
-        const appIdPrefix = 'jurnal-guru-shidqia';
+        const appIdPrefix = typeof __app_id !== 'undefined' ? __app_id : 'jurnal-guru-shidqia';
 
-        let app, db, auth; 
+        let app, db, auth, firebaseUid = null; 
         let currentUserIdGuru = null, currentUserName = null;
         let journalDataCache = [];
-
-        const MANUAL_SUBJECT_MAP = {
-            '856618': 'Bahasa Indonesia', '496900': 'Bahasa Indonesia', '224381': 'Bahasa Indonesia',
-            '840405': 'Matematika', '455465': 'Matematika', '727363': 'Matematika', '531280': 'Matematika',
-            '294510': 'Bahasa Inggris & EP', '538347': 'Bahasa Inggris & EP', '799626': 'Bahasa Inggris & EP',
-            '818174': 'IPA', '324591': 'IPA', '293070': 'IPA', '616024': 'PENDIDIKAN PANCASILA',
-            '937254': 'PENDIDIKAN PANCASILA', '267154': 'PABP & BAHASA ARAB', '172568': 'PAI',
-            '433811': 'IPS', '496518': 'IPS', '445605': 'IPS', '445167': 'Informatika',
-            '525669': 'Seni Budaya', '348198': 'PJOK', '231698': 'PJOK', '911981': 'Bahasa Arab', '823347': 'BK'
-        };
 
         // UI Helpers
         window.switchView = (target) => {
             const views = ['home', 'history', 'export'];
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
-                const nav = document.getElementById(`nav-${navMap(v)}`);
+                const nav = document.getElementById(`nav-${v}`);
                 if (v === target) {
                     el.classList.remove('hidden-view');
                     if(nav) nav.classList.add('active-tab');
@@ -424,8 +391,6 @@
             });
             if (target === 'history') setupRealtimeListener();
         };
-
-        const navMap = (v) => v === 'home' ? 'home' : (v === 'history' ? 'history' : 'export');
 
         window.openInputModal = () => {
             const modal = document.getElementById('modal-input');
@@ -442,46 +407,6 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         };
 
-        window.showAlert = (title, message) => {
-            document.getElementById('modal-alert-title').textContent = title;
-            document.getElementById('modal-alert-message').textContent = message;
-            document.getElementById('custom-modal-alert').classList.remove('hidden');
-        };
-
-        window.closeAlertModal = () => {
-            document.getElementById('custom-modal-alert').classList.add('hidden');
-        };
-
-        window.showConfirm = (title, message, onYes) => {
-            const modal = document.getElementById('custom-modal-confirm');
-            document.getElementById('modal-confirm-title').textContent = title;
-            document.getElementById('modal-confirm-message').textContent = message;
-            modal.classList.remove('hidden');
-
-            const btnYes = document.getElementById('modal-confirm-yes');
-            const btnNo = document.getElementById('modal-confirm-no');
-
-            const cleanup = () => {
-                modal.classList.add('hidden');
-                btnYes.onclick = null;
-                btnNo.onclick = null;
-            };
-
-            btnYes.onclick = () => {
-                onYes();
-                cleanup();
-            };
-
-            btnNo.onclick = cleanup;
-        };
-
-        function isIOS() {
-            return [
-                'iPad Simulator', 'iPhone Simulator', 'iPod Simulator',
-                'iPad', 'iPhone', 'iPod'
-            ].includes(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
-        }
-
         async function start() {
             try {
                 app = initializeApp(firebaseConfig);
@@ -492,6 +417,7 @@
                     if (!user) {
                         await signInAnonymously(auth);
                     } else {
+                        firebaseUid = user.uid;
                         checkSession();
                     }
                 });
@@ -502,7 +428,7 @@
 
         function checkSession() {
             const storedId = localStorage.getItem('jurnalGuruId');
-            if (storedId && MANUAL_SUBJECT_MAP[storedId]) {
+            if (storedId) {
                 currentUserIdGuru = storedId;
                 currentUserName = localStorage.getItem('jurnalGuruName');
                 setupApp();
@@ -523,10 +449,6 @@
             document.getElementById('login-container').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
             document.getElementById('user-display-name').textContent = currentUserName;
-            
-            if (isIOS()) {
-                document.getElementById('ios-install-tip').classList.remove('hidden');
-            }
 
             const now = new Date();
             document.getElementById('filter-tahun').value = now.getFullYear();
@@ -545,7 +467,7 @@
                 history.forEach(id => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = "bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold active:bg-indigo-600 active:text-white transition-all";
+                    btn.className = "bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold";
                     btn.textContent = id;
                     btn.onclick = () => { document.getElementById('id-guru-input').value = id; };
                     list.appendChild(btn);
@@ -585,7 +507,6 @@
                 }
             } catch {
                 document.getElementById('login-error').textContent = "Koneksi gagal.";
-                document.getElementById('login-error').classList.remove('hidden');
             } finally {
                 btn.disabled = false;
                 spinner.classList.add('hidden');
@@ -594,11 +515,9 @@
         });
 
         document.getElementById('logout-button').onclick = () => {
-            window.showConfirm("Konfirmasi Logout", "Apakah Anda yakin ingin keluar dari aplikasi?", () => {
-                localStorage.removeItem('jurnalGuruId');
-                localStorage.removeItem('jurnalGuruName');
-                window.location.reload();
-            });
+            localStorage.removeItem('jurnalGuruId');
+            localStorage.removeItem('jurnalGuruName');
+            window.location.reload();
         };
 
         document.getElementById('kegiatan').onchange = (e) => {
@@ -606,11 +525,12 @@
             document.getElementById('teaching-fields').classList.toggle('hidden', v !== 'Mengajar');
             document.getElementById('piket-fields').classList.toggle('hidden', v !== 'Piket');
             document.getElementById('other-fields').classList.toggle('hidden', v !== 'Lainnya');
-            document.getElementById('jam-pelajaran-field').classList.toggle('hidden', v !== 'Mengajar' && v !== 'Piket');
         };
 
         document.getElementById('journal-form').onsubmit = async (e) => {
             e.preventDefault();
+            if (!firebaseUid) return;
+
             const btn = document.getElementById('submit-button');
             const spinner = document.getElementById('submit-spinner');
             const txt = document.getElementById('submit-text');
@@ -624,13 +544,12 @@
                 const data = {
                     tanggal: document.getElementById('tanggal').value,
                     kegiatan: keg,
-                    jamMulai: document.getElementById('jam-mulai').value || null,
-                    jamSelesai: document.getElementById('jam-selesai').value || null,
-                    sheetIdGuru: currentUserIdGuru,
                     timestamp: Timestamp.now()
                 };
 
                 if (keg === 'Mengajar') {
+                    data.jamMulai = document.getElementById('jam-mulai').value;
+                    data.jamSelesai = document.getElementById('jam-selesai').value;
                     data.kelasDiajar = document.getElementById('kelas').value;
                     data.materiDiajar = document.getElementById('materi').value;
                     data.kehadiranPesertaDidik = document.getElementById('kehadiran').value;
@@ -640,9 +559,11 @@
                     data.namaKegiatanLainnya = document.getElementById('nama-kegiatan-lainnya').value;
                 }
 
-                // SIMPAN DATA BERDASARKAN ID GURU AGAR SINKRON ANTAR PERANGKAT
-                await addDoc(collection(db, 'artifacts', appIdPrefix, 'users', currentUserIdGuru, 'jurnal_harian'), data);
+                // Rule 1: Gunakan path user spesifik untuk menghindari permission error
+                const userPath = `/artifacts/${appIdPrefix}/users/${firebaseUid}/jurnal_harian`;
+                await addDoc(collection(db, userPath), data);
                 
+                // Sinkronisasi Sheets
                 const sheetData = {
                     Tanggal: data.tanggal,
                     Kegiatan: keg,
@@ -653,16 +574,15 @@
                     'Keterangan Lainnya': keg === 'Piket' ? data.lantai : (keg === 'Lainnya' ? data.namaKegiatanLainnya : '')
                 };
                 
-                await fetch(GOOGLE_SHEET_WEBHOOK_URL, { 
+                fetch(GOOGLE_SHEET_WEBHOOK_URL, { 
                     method: 'POST', mode: 'no-cors', 
                     body: JSON.stringify({...sheetData, 'Nama Guru': currentUserName, 'ID Guru': currentUserIdGuru, 'Waktu Simpan': new Date().toLocaleString()})
                 });
 
                 closeInputModal();
-                showAlert("Berhasil", "Jurnal harian disimpan.");
                 document.getElementById('journal-form').reset();
             } catch (e) {
-                showAlert("Gagal", "Kesalahan simpan.");
+                console.error("Save error", e);
             } finally {
                 btn.disabled = false;
                 spinner.classList.add('hidden');
@@ -671,12 +591,17 @@
         };
 
         function setupRealtimeListener() {
-            if (!currentUserIdGuru) return;
-            // FETCH DATA BERDASARKAN ID GURU AGAR SINKRON ANTAR PERANGKAT
-            const q = query(collection(db, 'artifacts', appIdPrefix, 'users', currentUserIdGuru, 'jurnal_harian'), orderBy('timestamp', 'desc'));
+            if (!firebaseUid) return;
+            const userPath = `/artifacts/${appIdPrefix}/users/${firebaseUid}/jurnal_harian`;
+            const q = query(collection(db, userPath));
+            
             onSnapshot(q, (snap) => {
-                const arr = [];
+                let arr = [];
                 snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                
+                // Rule 2: Filter/Sort di memori
+                arr.sort((a, b) => b.timestamp?.seconds - a.timestamp?.seconds);
+                
                 journalDataCache = arr;
                 updateStats();
                 renderHistory();
@@ -693,15 +618,12 @@
             const todayCount = journalDataCache.filter(e => e.tanggal === todayStr).length;
             const monthCount = journalDataCache.filter(e => e.tanggal.startsWith(`${curYear}-${curMonth}`)).length;
 
-            const elToday = document.getElementById('stat-count-today');
-            const elMonth = document.getElementById('stat-count-month');
-            if(elToday) elToday.textContent = todayCount;
-            if(elMonth) elMonth.textContent = monthCount;
+            document.getElementById('stat-count-today').textContent = todayCount;
+            document.getElementById('stat-count-month').textContent = monthCount;
         }
 
         function renderRecentDashboard() {
             const list = document.getElementById('home-recent-list');
-            if(!list) return;
             const recents = journalDataCache.slice(0, 3);
             if (recents.length === 0) {
                 list.innerHTML = `<p class="text-center text-sm text-gray-400 py-4">Belum ada jurnal.</p>`;
@@ -711,10 +633,9 @@
             recents.forEach(e => {
                 const div = document.createElement('div');
                 div.className = "flex items-center space-x-4";
-                const color = e.kegiatan === 'Mengajar' ? 'indigo' : (e.kegiatan === 'Piket' ? 'emerald' : 'orange');
                 div.innerHTML = `
-                    <div class="bg-${color}-50 p-3 rounded-2xl">
-                        <div class="w-3 h-3 rounded-full bg-${color}-500"></div>
+                    <div class="bg-indigo-50 p-3 rounded-2xl">
+                        <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
                     </div>
                     <div class="flex-1">
                         <h4 class="text-sm font-bold text-gray-800">${e.kegiatan}</h4>
@@ -727,7 +648,6 @@
 
         function renderHistory() {
             const list = document.getElementById('journal-list-content');
-            if(!list) return;
             const b = document.getElementById('filter-bulan').value;
             const t = document.getElementById('filter-tahun').value;
             
@@ -741,84 +661,26 @@
             filtered.forEach(e => {
                 const card = document.createElement('div');
                 card.className = "bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm relative";
-                const color = e.kegiatan === 'Mengajar' ? 'indigo' : (e.kegiatan === 'Piket' ? 'emerald' : 'orange');
-                
-                let detailHtml = '';
-                if(e.kegiatan === 'Mengajar') detailHtml = `<p class="text-xs text-gray-500 mt-2"><b>${e.kelasDiajar}</b> • ${e.materiDiajar}</p>`;
-                else if(e.kegiatan === 'Piket') detailHtml = `<p class="text-xs text-gray-500 mt-2"><b>${e.lantai}</b></p>`;
-                else if(e.kegiatan === 'Lainnya') detailHtml = `<p class="text-xs text-gray-500 mt-2"><b>${e.namaKegiatanLainnya}</b></p>`;
-
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="text-[9px] font-black uppercase tracking-widest text-${color}-500 bg-${color}-50 px-2 py-1 rounded-lg">${e.kegiatan}</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2 py-1 rounded-lg">${e.kegiatan}</span>
                             <h4 class="text-lg font-bold text-gray-900 mt-2">${e.tanggal}</h4>
-                            ${detailHtml}
                         </div>
-                        <button onclick="window.confirmDelete('${e.id}')" class="p-2 text-red-400">
-                           Hapus
-                        </button>
+                        <button onclick="deleteJournal('${e.id}')" class="p-2 text-red-400">Hapus</button>
                     </div>
                 `;
                 list.appendChild(card);
             });
         }
 
-        window.confirmDelete = (id) => {
-            window.showConfirm("Hapus Jurnal?", "Tindakan ini tidak dapat dibatalkan.", async () => {
-                await deleteDoc(doc(db, 'artifacts', appIdPrefix, 'users', currentUserIdGuru, 'jurnal_harian', id));
-            });
+        window.deleteJournal = async (id) => {
+            if (!confirm("Hapus jurnal ini?")) return;
+            const userPath = `/artifacts/${appIdPrefix}/users/${firebaseUid}/jurnal_harian`;
+            await deleteDoc(doc(db, userPath, id));
         };
-
-        document.getElementById('export-html-button').onclick = () => {
-            const b = document.getElementById('bulan-export').value;
-            const t = document.getElementById('tahun-export').value;
-            const data = journalDataCache.filter(e => e.tanggal.startsWith(`${t}-${b}`));
-            if (!data.length) return showAlert("Info", "Data kosong.");
-            
-            let html = `<html><body><h2>LAPORAN JURNAL - ${currentUserName}</h2><table border="1"><thead><tr><th>Tanggal</th><th>Kegiatan</th></tr></thead><tbody>`;
-            data.forEach(e => html += `<tr><td>${e.tanggal}</td><td>${e.kegiatan}</td></tr>`);
-            html += `</tbody></table></body></html>`;
-            const blob = new Blob([html], {type: 'text/html'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob); a.download = `Jurnal_${b}_${t}.html`;
-            a.click();
-        };
-
-        document.getElementById('filter-bulan').onchange = setupRealtimeListener;
-        document.getElementById('filter-tahun').onchange = setupRealtimeListener;
 
         start();
-    </script>
-
-    <!-- PWA -->
-    <script>
-        const manifest = {
-            "name": "Jurnal Guru Shidqia",
-            "short_name": "Jurnal Guru",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#ffffff",
-            "theme_color": "#4f46e5",
-            "icons": [{"src": "https://placehold.co/512x512/4f46e5/ffffff?text=JG", "sizes": "512x512", "type": "image/png"}]
-        };
-        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        document.getElementById('pwa-manifest-link').setAttribute('href', URL.createObjectURL(blob));
-
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-banner').classList.remove('hidden');
-        });
-
-        document.getElementById('install-button').onclick = async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt = null;
-                document.getElementById('install-banner').classList.add('hidden');
-            }
-        };
     </script>
 </body>
 </html>
